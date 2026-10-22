@@ -21,7 +21,7 @@ const BRAND = {
 /* ============================================================= */
 const BUSINESS = {
   timeZone: "America/Bogota",     /* el estado no depende del reloj del visitante */
-  siteUrl:  "https://el-porton-cajica.vercel.app",
+  siteUrl:  "https://el-porton-cajica-9i6h.vercel.app",
 
   /* Horario de atención. Clave = día de la semana (0 = domingo … 6 = sábado).
      `null` = cerrado ese día. Formato 24 h. */
