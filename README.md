@@ -22,7 +22,7 @@ Supabase (Postgres + Auth + Storage) · Vercel.
   fusiona por encima.
 - **Seguridad**: las políticas RLS de Supabase protegen los datos; la clave de
   servidor nunca llega al navegador. Cabeceras de seguridad en
-  `src/lib/cabeceras.ts`.
+  `next.config.ts`.
 - **Anti-spam de pedidos** (`src/lib/antispam.ts`): campo trampa invisible,
   límite por conexión, por teléfono y tope global. Los umbrales son holgados
   a propósito y, si la base de datos no responde, el pedido pasa igual.

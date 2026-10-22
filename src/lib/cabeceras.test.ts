@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CABECERAS_SEGURIDAD } from './cabeceras';
+import { CABECERAS_SEGURIDAD } from '../../next.config';
 
 const valor = (k: string) => CABECERAS_SEGURIDAD.find((c) => c.key === k)?.value;
 
