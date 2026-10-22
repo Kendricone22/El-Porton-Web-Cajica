@@ -22,7 +22,7 @@ import ModalSeguridad from '@/componentes/admin/ModalSeguridad';
 import FondoAdmin from '@/componentes/admin/FondoAdmin';
 
 export default function PanelAdmin() {
-  const { estado, correo, factorId, error, revisar, salir } = useSesionAdmin();
+  const { estado, factorId, error, revisar, salir } = useSesionAdmin();
   const [pestana, setPestana] = useState<'pedidos' | 'analitica' | 'menu'>('pedidos');
   /* Cambiar este número hace que las pestañas vuelvan a pedir sus datos.
      Es más simple que pasar una función de recarga a cada una. */

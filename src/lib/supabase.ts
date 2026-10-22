@@ -29,7 +29,7 @@ function exigir(nombre: string, valor: string | undefined): string {
   if (!valor) {
     throw new Error(
       `[supabase] Falta la variable de entorno ${nombre}. ` +
-        `En local se define en porton-next/.env.local; en producción, en Vercel → Settings → Environment Variables.`,
+        `En local se define en .env.local; en producción, en Vercel → Settings → Environment Variables.`,
     );
   }
   return valor;

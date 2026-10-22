@@ -30,7 +30,7 @@ export function supabaseNavegador(): SupabaseClient {
   if (!url || !clave) {
     throw new Error(
       '[supabase] Faltan NEXT_PUBLIC_SUPABASE_URL o NEXT_PUBLIC_SUPABASE_ANON_KEY. ' +
-        'En local van en porton-next/.env.local; en producción, en Vercel.',
+        'En local van en .env.local; en producción, en Vercel.',
     );
   }
 

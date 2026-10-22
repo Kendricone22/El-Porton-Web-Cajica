@@ -8,7 +8,7 @@
  *
  *   · "Agotar" oculta el plato de la carta al instante.
  *   · Borrar una fila NO quita el plato de la web si sigue existiendo
- *     en `data.js`: volverá a aparecer en la siguiente carga. Para
+ *     en `src/data/menu.ts`: volverá a aparecer en la siguiente carga. Para
  *     esconderlo de verdad hay que usar "Agotar". Está avisado en la
  *     confirmación de borrado, cosa que v1 no hace.
  * ============================================================= */

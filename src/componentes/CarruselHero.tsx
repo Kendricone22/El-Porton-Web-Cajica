@@ -88,7 +88,6 @@ export default function CarruselHero({ productos }: { productos: ProductoHero[] 
               {prod.imgTall && (
                 <source media="(max-width: 900px) and (orientation: portrait)" srcSet={ruta(prod.imgTall)} />
               )}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 className="hero-photo"
                 src={ruta(prod.img!)}

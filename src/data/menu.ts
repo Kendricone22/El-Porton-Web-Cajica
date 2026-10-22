@@ -518,7 +518,7 @@ const CAT_DESC = {
 
 
 /* =============================================================
- * EXPORTACIONES — única diferencia con js/data.js del sitio v1.
+ * EXPORTACIONES — única diferencia con el menú original del sitio v1.
  * Todo lo de arriba es copia BYTE A BYTE: el menú jamás se
  * vuelve a escribir a mano (regla anti-invención del proyecto).
  *

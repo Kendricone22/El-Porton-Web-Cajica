@@ -13,7 +13,7 @@ import type { Categoria, ProductoMenu } from '@/types/menu';
  * panel antes de que el código tuviera foto no borre la buena.
  *
  * Consecuencia real, heredada de v1: si el plato trae su foto en
- * `data.js`, quitarla desde el panel NO la quita de la web. Para eso
+ * `src/data/menu.ts`, quitarla desde el panel NO la quita de la web. Para eso
  * hay que quitarla también del código. Se deja igual a propósito.
  */
 export type DatosGuardados = Partial<Omit<ProductoMenu, 'img'>> & { img?: string | null };
