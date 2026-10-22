@@ -24,29 +24,32 @@
 import { useMemo, useState } from 'react';
 import type { Categoria, CategoriaId, ProductoMenu } from '@/types/menu';
 import { CAT_DESC } from '@/data/menu';
-import {
-  LIMITE_VISIBLES,
-  categoriasConProductos,
-  productosDe,
-  retrasoCascada,
-} from '@/lib/catalogo';
+import { LIMITE_VISIBLES, productosDe, retrasoCascada } from '@/lib/catalogo';
 import TarjetaProducto, { textoBoton } from './TarjetaProducto';
+import { IconoCategoria } from './Iconos';
 
 type DescripcionCat = { emoji: string; title: string; text: string };
 
 export default function Catalogo({
   menu,
-  categorias,
+  pestanas,
+  catActiva,
+  onCambiarCategoria,
   onPersonalizar,
 }: {
   menu: ProductoMenu[];
-  categorias: Categoria[];
-  /** Lo conectará el modal en el siguiente tramo. */
+  /** Solo las categorías que tienen productos (las calcula la Tienda). */
+  pestanas: Categoria[];
+  /** La categoría activa la guarda la Tienda: el banner de combo también la cambia. */
+  catActiva: CategoriaId;
+  onCambiarCategoria: (key: CategoriaId) => void;
   onPersonalizar?: (id: string) => void;
 }) {
-  const pestanas = useMemo(() => categoriasConProductos(menu, categorias), [menu, categorias]);
-  const [catActiva, setCatActiva] = useState(() => pestanas[0]?.key ?? categorias[0].key);
-  const [expandido, setExpandido] = useState(false);
+  /* "Mostrar más" se recuerda POR categoría: al cambiar de pestaña la
+     nueva arranca colapsada, como en v1, sin necesidad de un efecto que
+     lo resetee. */
+  const [expandidaEn, setExpandidaEn] = useState<CategoriaId | null>(null);
+  const expandido = expandidaEn === catActiva;
 
   const visiblesTotales = useMemo(() => productosDe(menu, catActiva), [menu, catActiva]);
   const hayMas = visiblesTotales.length > LIMITE_VISIBLES;
@@ -54,29 +57,24 @@ export default function Catalogo({
 
   const descripcion = (CAT_DESC as Record<string, DescripcionCat[] | undefined>)[catActiva];
 
-  /** Al cambiar de categoría se vuelve a colapsar, como en v1. */
-  function elegirCategoria(key: CategoriaId) {
-    setCatActiva(key);
-    setExpandido(false);
-  }
-
   return (
     <section className="catalogo">
       <div className="catalogo-filtros-wrap">
-        <div id="catalogo-filtros" className="catalogo-filtros" role="tablist">
+        <div id="catalogo-filtros" className="catalogo-filtros rd-antojos" role="tablist" aria-label="Categorías de la carta">
           {pestanas.map((c) => (
             <button
               key={c.key}
               type="button"
               role="tab"
               aria-selected={c.key === catActiva}
-              className={`filtro-tab${c.key === catActiva ? ' is-active' : ''}`}
+              className={`filtro-tab rd-antojo${c.key === catActiva ? ' is-active' : ''}`}
               onClick={(e) => {
-                elegirCategoria(c.key);
+                onCambiarCategoria(c.key);
                 e.currentTarget.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
               }}
             >
-              {c.emoji} {c.label}
+              <IconoCategoria cat={c.key} className="rd-antojo-icono" size={30} />
+              <span className="rd-antojo-texto">{c.label}</span>
             </button>
           ))}
         </div>
@@ -113,7 +111,7 @@ export default function Catalogo({
                   data-id={p.id}
                   onClick={() => onPersonalizar?.(p.id)}
                 >
-                  {textoBoton(p)}
+                  <span aria-hidden="true">+</span> {textoBoton(p)}
                 </button>
               }
             />
@@ -129,7 +127,7 @@ export default function Catalogo({
             type="button"
             id="catalogo-more-btn"
             className={`ver-carta${expandido ? ' is-expanded' : ''}`}
-            onClick={() => setExpandido((v) => !v)}
+            onClick={() => setExpandidaEn(expandido ? null : catActiva)}
           >
             <span className="more-label">{expandido ? 'Mostrar menos' : 'Mostrar más'}</span>
           </button>

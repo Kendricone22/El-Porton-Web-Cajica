@@ -18,6 +18,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ProductoHero } from '@/types/menu';
+import { DATOS_HERO } from '@/data/portada';
+import { Icono } from './Iconos';
 
 /** Cada cuánto avanza solo. */
 const INTERVALO_MS = 5000;
@@ -120,7 +122,22 @@ export default function CarruselHero({ productos }: { productos: ProductoHero[] 
             <span>Ordenar Ahora</span>
             <span aria-hidden="true">→</span>
           </a>
+          <a href="#carta" className="rd-btn rd-btn--contorno rd-hero-ver">
+            Ver favoritos
+          </a>
         </div>
+
+        <ul className="rd-hero-datos">
+          {DATOS_HERO.map((d) => (
+            <li key={d.titulo}>
+              <Icono nombre={d.icono} className="rd-hero-dato-icono" size={22} />
+              <span>
+                <strong>{d.titulo}</strong>
+                {d.texto}
+              </span>
+            </li>
+          ))}
+        </ul>
       </div>
 
       {total > 1 && (

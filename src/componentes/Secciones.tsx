@@ -1,5 +1,8 @@
-import { TESTIMONIOS } from '@/data/menu';
+import Image from 'next/image';
+import { BRAND, TESTIMONIOS } from '@/data/menu';
 import type { Testimonio } from '@/types/menu';
+import { CONTACTO, METODOS_PAGO } from '@/data/portada';
+import { Icono } from './Iconos';
 
 /* =============================================================
  * SECCIONES DE CONTENIDO
@@ -100,10 +103,13 @@ export function Testimonios() {
 
   return (
     <section id="testimonios" className="testimonios reveal" aria-label="Lo que dicen nuestros clientes">
-      <div className="carta-header" style={{ padding: '0 0 0.5rem' }}>
-        <p className="carta-eyebrow">Clientes felices</p>
-        <h2 className="carta-title">Ellos ya cayeron en el antojo</h2>
-      </div>
+      <header className="rd-cabecera rd-cabecera--centro">
+        <h2 className="rd-titulo">
+          <Icono nombre="estrella" className="rd-titulo-icono" />
+          Lo que dicen de nosotros
+        </h2>
+        <p className="rd-subtitulo">Reseñas reales de nuestros clientes en Google</p>
+      </header>
 
       <a
         className="google-rating"
@@ -152,7 +158,17 @@ export function Testimonios() {
 /* ---------- nosotros ---------- */
 export function Nosotros() {
   return (
-    <section id="nosotros" className="about reveal">
+    <section id="nosotros" className="about rd-nosotros reveal">
+      <div className="rd-nosotros-media">
+        <Image
+          src="/assets/Platos/hamburguesa-montanera.jpg"
+          alt="Hamburguesa Montañera de El Portón"
+          fill
+          sizes="(max-width: 900px) 100vw, 42vw"
+        />
+      </div>
+
+      <div className="rd-nosotros-texto">
       <p className="about-eyebrow">Nuestra historia</p>
       <h2 className="about-title">Más de 11 años forjando el verdadero sabor de Cajicá</h2>
 
@@ -190,6 +206,7 @@ export function Nosotros() {
           </div>
         ))}
       </div>
+      </div>
     </section>
   );
 }
@@ -211,7 +228,7 @@ export function Contacto() {
       <div className="contacto-box">
         <div className="contacto-grid">
           <ItemInfo etiqueta="Nuestra casa" icono={IconoUbicacion}>
-            Calle 11 A Sur #10-75 · Camino entrada Fagua, sector Canelón.
+            {CONTACTO.direccion}
           </ItemInfo>
 
           <ItemInfo
@@ -223,9 +240,9 @@ export function Contacto() {
               </>
             }
           >
-            Martes a Domingo · 1:00 PM – 10:00 PM.
+            {CONTACTO.horario}
             <br />
-            Lunes cerrado — abrimos solo en lunes festivos.
+            {CONTACTO.horarioNota}
           </ItemInfo>
 
           <ItemInfo
@@ -259,7 +276,7 @@ export function Contacto() {
         <div className="contacto-actions">
           <a
             className="contacto-btn"
-            href="https://maps.app.goo.gl/B1Yka6GRnqEvMZ6u6"
+            href={CONTACTO.mapa}
             target="_blank"
             rel="noopener"
           >
@@ -323,24 +340,108 @@ function ItemInfo({
   );
 }
 
+/* ---------- ¿listo para pedir? ---------- */
+export function LlamadoPedido() {
+  return (
+    <section className="rd-seccion reveal" aria-labelledby="titulo-llamado">
+      <div className="rd-llamado">
+        <Icono nombre="bolsa" className="rd-llamado-icono" size={44} />
+        <div className="rd-llamado-texto">
+          <h2 id="titulo-llamado" className="rd-llamado-titulo">¿Listo para pedir?</h2>
+          <p>Arma tu pedido en segundos y te llega armado a WhatsApp.</p>
+        </div>
+        <div className="rd-llamado-accion">
+          <a href="#menu-catalogo" className="rd-btn rd-btn--rojo rd-btn--grande">
+            <Icono nombre="whatsapp" size={20} /> Armar mi pedido <Icono nombre="flecha" size={18} />
+          </a>
+          <p className="rd-pagos">
+            Aceptamos:
+            {METODOS_PAGO.map((m) => (
+              <span key={m} className="rd-pago">
+                {m}
+              </span>
+            ))}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ---------- pie ---------- */
+const ENLACES_PIE = [
+  { href: '#inicio', texto: 'Inicio' },
+  { href: '#menu-catalogo', texto: 'Menú' },
+  { href: '#carta', texto: 'Favoritos' },
+  { href: '#nosotros', texto: 'Nosotros' },
+  { href: '#contacto', texto: 'Contacto' },
+];
+
 export function PieDePagina() {
   // El año se calcula en el servidor, en cada regeneración. En v1 lo
   // rellena JavaScript, así que en el HTML quedaba fijo a 2026.
   const anio = new Date().getFullYear();
+  const whatsapp = `https://wa.me/${(BRAND as { whatsapp: string }).whatsapp}`;
 
   return (
-    <footer className="site-footer">
-      <p className="site-footer-logo">El Portón Cajicá</p>
-      <p className="site-footer-tag">Comidas Rápidas &amp; Pizzería Artesanal · Cajicá, Cundinamarca</p>
-      <p className="site-footer-copy">
-        © {anio} El Portón Cajicá. Hecho con 🔥 y mucho sabor.
-        <br />
-        Síguenos en{' '}
-        <a href="https://instagram.com/elportoncajica" target="_blank" rel="noopener">
-          @elportoncajica
-        </a>
-      </p>
+    <footer className="site-footer rd-pie">
+      <div className="rd-pie-grid">
+        <div className="rd-pie-marca">
+          <Image src="/assets/logo-final.png" alt="El Portón Cajicá" width={150} height={60} className="rd-pie-logo" />
+          <p>Comidas Rápidas &amp; Pizzería Artesanal · Cajicá, Cundinamarca.</p>
+          <div className="rd-redes">
+            <a href={CONTACTO.instagram} target="_blank" rel="noopener" aria-label="Instagram de El Portón">
+              <Icono nombre="instagram" size={18} />
+            </a>
+            <a href={whatsapp} target="_blank" rel="noopener" aria-label="WhatsApp de El Portón">
+              <Icono nombre="whatsapp" size={18} />
+            </a>
+          </div>
+        </div>
+
+        <nav aria-label="Navegación del pie">
+          <h3 className="rd-pie-titulo">Navegación</h3>
+          <ul>
+            {ENLACES_PIE.map((e) => (
+              <li key={e.href}>
+                <a href={e.href}>{e.texto}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div>
+          <h3 className="rd-pie-titulo">Información</h3>
+          <ul className="rd-pie-info">
+            <li>
+              <Icono nombre="reloj" size={16} />
+              <span>
+                {CONTACTO.horario}
+                <br />
+                <small>{CONTACTO.horarioNota}</small>
+              </span>
+            </li>
+            <li>
+              <Icono nombre="whatsapp" size={16} />
+              <span>Domicilios {CONTACTO.domicilios.charAt(0).toLowerCase() + CONTACTO.domicilios.slice(1)}</span>
+            </li>
+            <li>
+              <Icono nombre="ubicacion" size={16} />
+              <span>{CONTACTO.direccion}</span>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="rd-pie-titulo">Síguenos</h3>
+          <p className="rd-pie-p">Novedades, platos nuevos y promociones en nuestras redes.</p>
+          <a className="rd-btn rd-btn--contorno rd-btn--chico" href={CONTACTO.instagram} target="_blank" rel="noopener">
+            <Icono nombre="instagram" size={16} /> {CONTACTO.instagramUsuario}
+          </a>
+        </div>
+      </div>
+
+      <p className="site-footer-copy rd-pie-copy">© {anio} El Portón Cajicá. Hecho con 🔥 y mucho sabor.</p>
     </footer>
   );
 }

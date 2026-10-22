@@ -4,6 +4,7 @@ import { ProveedorCarrito } from '@/estado/carrito';
 import { SITIO } from '@/lib/sitio';
 import './globals.css';
 import './estilos-v1.css';
+import './estilos-rediseno.css';
 
 /* =============================================================
  * FUENTES

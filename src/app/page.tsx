@@ -2,21 +2,13 @@ import { CATEGORIES } from '@/data/menu';
 import { obtenerMenu } from '@/lib/menu-servidor';
 import Navbar from '@/componentes/Navbar';
 import Hero from '@/componentes/Hero';
-import Vitrina from '@/componentes/Vitrina';
 import Tienda from '@/componentes/Tienda';
 import RevelarAlScroll from '@/componentes/RevelarAlScroll';
 import Lightbox from '@/componentes/Lightbox';
 import InsigniaHorario from '@/componentes/InsigniaHorario';
 import DatosEstructurados from '@/componentes/DatosEstructurados';
 import FondoParticulas from '@/componentes/FondoParticulas';
-import {
-  ComoPedir,
-  Contacto,
-  EncabezadoCarta,
-  Nosotros,
-  PieDePagina,
-  Testimonios,
-} from '@/componentes/Secciones';
+import { ComoPedir, Contacto, LlamadoPedido, Nosotros, PieDePagina, Testimonios } from '@/componentes/Secciones';
 
 /* =============================================================
  * PORTADA
@@ -25,16 +17,14 @@ import {
  * sin useEffect ni estados de carga. Cuando el HTML sale hacia el
  * navegador, los productos ya van dentro.
  *
- * El orden de las secciones es el que fijó el cliente y no se toca:
- *   Hero → "Cada plato, una historia" → vitrina → cómo pedir →
- *   "Lo que nos hace únicos" → catálogo → testimonios → nosotros →
- *   contacto → pie.
+ * Orden del rediseño (2026-10, sobre el prototipo aprobado por el
+ * cliente):
+ *   Hero → favoritos de la casa → banner de combo → "Elige tu antojo"
+ *   (carta completa) → cómo pedir → testimonios → nosotros → contacto →
+ *   ¿listo para pedir? → pie.
  *
- * `.page-dark` envuelve nosotros/contacto: es un fondo negro opaco que
- * tapa el lienzo de partículas de ahí hacia abajo.
- *
- * Falta por portar: lightbox con ficha, partículas, insignia de
- * horario y JSON-LD.
+ * `.page-dark` envuelve nosotros/contacto/llamado: es un fondo negro
+ * opaco que tapa el lienzo de partículas de ahí hacia abajo.
  * ============================================================= */
 
 export default async function Portada() {
@@ -55,30 +45,17 @@ export default async function Portada() {
       <main>
         <Hero />
 
-        <EncabezadoCarta
-          eyebrow="Conoce la carta"
-          titulo="Cada plato, una historia"
-          sub="Ingredientes seleccionados, sazón real, hecho con orgullo colombiano."
-        />
-
-        <Vitrina />
+        {/* Favoritos, combo y la carta completa comparten estado con el modal. */}
+        <Tienda menu={menu} categorias={CATEGORIES} />
 
         <ComoPedir />
-
-        <EncabezadoCarta
-          id="menu-catalogo"
-          eyebrow="Nuestra carta"
-          titulo="Lo que nos hace únicos"
-          sub="Ingredientes artesanales, sazón colombiana auténtica. Cada plato es una experiencia."
-        />
-
-        <Tienda menu={menu} categorias={CATEGORIES} />
 
         <Testimonios />
 
         <div className="page-dark">
           <Nosotros />
           <Contacto />
+          <LlamadoPedido />
         </div>
       </main>
 

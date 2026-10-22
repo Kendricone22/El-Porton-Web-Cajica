@@ -1,0 +1,364 @@
+/* =============================================================
+ * REDISEÑO 2026-10 — sobre el prototipo aprobado por el cliente
+ *
+ * Se carga DESPUÉS de estilos-v1.css: aquí solo hay lo nuevo (`rd-…`)
+ * y los ajustes a piezas existentes para que encajen con el prototipo.
+ * Las clases de v1 que usa el JavaScript (cat-card-img, hero-content,
+ * menu-catalogo, …) se conservan: solo cambia cómo se ven.
+ * ============================================================= */
+
+:root {
+  --rd-panel: #121214;
+  --rd-panel-2: #18181b;
+  --rd-borde: rgba(255, 255, 255, 0.08);
+  --rd-borde-rojo: rgba(229, 62, 62, 0.45);
+  --rd-texto-2: #a1a1aa;
+  --rd-radio: 14px;
+  --rd-ancho: 76rem;
+}
+
+/* ---------- Bloques comunes ---------- */
+.rd-seccion {
+  max-width: var(--rd-ancho);
+  margin: 0 auto;
+  padding: 4.5rem 1.25rem 0;
+}
+.rd-cabecera { margin-bottom: 1.75rem; }
+.rd-cabecera--centro { text-align: center; }
+.rd-titulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: #fff;
+  text-transform: uppercase;
+}
+.rd-titulo-icono { color: var(--rojo); flex: 0 0 auto; width: 1.15em; height: 1.15em; }
+.rd-subtitulo { color: var(--rd-texto-2); font-size: 0.95rem; margin-top: 0.45rem; }
+.rd-centro { display: flex; justify-content: center; margin-top: 2rem; }
+.rd-rojo { color: var(--rojo); }
+.rd-raya { display: block; width: 2.5rem; height: 3px; border-radius: 3px; background: var(--rojo); margin-bottom: 1rem; }
+
+/* ---------- Botones ---------- */
+.rd-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 0.75rem 1.35rem;
+  border-radius: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.2s ease, background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.rd-btn:active { transform: scale(0.98); }
+.rd-btn--rojo {
+  color: #fff;
+  background: var(--rojo);
+  border: 1px solid var(--rojo);
+  box-shadow: 0 8px 22px -8px rgba(229, 62, 62, 0.7);
+}
+.rd-btn--rojo:hover { background: var(--rojo-dark); transform: translateY(-1px); }
+.rd-btn--contorno {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+}
+.rd-btn--contorno:hover { border-color: #fff; background: rgba(255, 255, 255, 0.06); }
+.rd-btn--grande { font-size: 1.02rem; padding: 0.95rem 1.7rem; }
+.rd-btn--chico { font-size: 0.82rem; padding: 0.55rem 0.95rem; }
+
+/* ---------- Hero: botón secundario y datos ---------- */
+.hero-actions { flex-wrap: wrap; }
+.rd-hero-ver { padding: 0.7rem 1.3rem; }
+.hero-content > .rd-hero-datos { max-width: 44rem; }
+.rd-hero-datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.75rem;
+  margin-top: 1.9rem;
+  list-style: none;
+  padding: 0;
+}
+.rd-hero-datos li { display: flex; align-items: center; gap: 0.6rem; }
+.rd-hero-dato-icono {
+  color: var(--rojo);
+  flex: 0 0 auto;
+  padding: 0.45rem;
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 50%;
+  border: 1px solid var(--rd-borde-rojo);
+  background: rgba(229, 62, 62, 0.08);
+}
+.rd-hero-datos span { display: flex; flex-direction: column; font-size: 0.75rem; color: var(--rd-texto-2); line-height: 1.3; }
+.rd-hero-datos strong { color: #fff; font-size: 0.82rem; font-weight: 600; }
+
+/* ---------- Tarjetas de producto (favoritos y carta) ---------- */
+.cat-card {
+  background: var(--rd-panel);
+  border: 1px solid var(--rd-borde);
+  border-radius: var(--rd-radio);
+}
+.cat-card-media { aspect-ratio: 4 / 3; }
+.cat-card-body { padding: 1rem 1.05rem 1.1rem; }
+.cat-card-title { font-size: 1rem; }
+.cat-card-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  /* Sin crecer: si la caja se estira, asoma media tercera línea.
+     El pie de la tarjeta baja solo con margin-top: auto. */
+  flex: 0 0 auto;
+}
+.cat-card-foot { margin-top: auto; }
+.cat-card-price {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #fff;
+  letter-spacing: 0;
+}
+.cat-card-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--rojo);
+  border-color: var(--rojo);
+  border-radius: 999px;
+  padding: 0.5rem 0.95rem;
+  box-shadow: 0 6px 16px -8px rgba(229, 62, 62, 0.8);
+}
+.cat-card-btn:hover { background: var(--rojo-dark); border-color: var(--rojo-dark); }
+.cat-card-btn > span[aria-hidden] { font-size: 1.05em; line-height: 1; }
+
+/* ---------- Favoritos ---------- */
+.rd-favoritos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+@media (min-width: 900px) { .rd-favoritos-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.25rem; } }
+
+/* ---------- Banner de combo ---------- */
+.rd-combo {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  overflow: hidden;
+  border-radius: calc(var(--rd-radio) + 4px);
+  border: 1px solid var(--rd-borde-rojo);
+  background: radial-gradient(120% 140% at 0% 0%, rgba(229, 62, 62, 0.14), transparent 55%), var(--rd-panel);
+  box-shadow: 0 0 0 1px rgba(229, 62, 62, 0.06), 0 30px 60px -30px rgba(229, 62, 62, 0.35);
+}
+.rd-combo-texto { position: relative; z-index: 1; padding: 2.2rem 1.6rem; }
+.rd-combo-titulo {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  line-height: 0.95;
+  color: #fff;
+  text-transform: uppercase;
+}
+.rd-combo-titulo span { display: block; color: var(--rojo); }
+.rd-combo-p { color: #d4d4d8; font-size: 0.98rem; line-height: 1.6; margin: 1rem 0 1.5rem; max-width: 26rem; }
+.rd-combo-p strong { color: #fff; }
+.rd-combo-media { position: relative; min-height: 13rem; }
+.rd-combo-media img { object-fit: cover; object-position: 75% 50%; }
+@media (min-width: 900px) {
+  .rd-combo { grid-template-columns: 1fr 1.25fr; min-height: 21rem; }
+  .rd-combo-texto { padding: 3rem 0 3rem 3.2rem; align-self: center; }
+  .rd-combo-media { min-height: 0; }
+  /* La foto se funde con el panel por la izquierda, sin corte duro. */
+  .rd-combo-media::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(90deg, var(--rd-panel) 0%, rgba(18, 18, 20, 0) 35%);
+  }
+}
+
+/* ---------- "Elige tu antojo": categorías como fichas con icono ---------- */
+.catalogo { padding-top: 0; }
+.catalogo-filtros-wrap {
+  position: static;
+  background: none;
+  backdrop-filter: none;
+  border: 0;
+  padding: 0;
+  margin-bottom: 2rem;
+}
+.rd-antojos { gap: 0.75rem; padding: 0.25rem 0.1rem 0.6rem; }
+@media (min-width: 768px) { .rd-antojos { flex-wrap: nowrap; justify-content: center; } }
+.filtro-tab.rd-antojo {
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.55rem;
+  min-width: 7.4rem;
+  padding: 1rem 0.9rem 0.85rem;
+  border-radius: var(--rd-radio);
+  background: var(--rd-panel);
+  border: 1px solid var(--rd-borde);
+  color: #d4d4d8;
+  font-size: 0.8rem;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.2;
+}
+@media (min-width: 768px) { .filtro-tab.rd-antojo { flex: 1 1 0; max-width: 10rem; } }
+.rd-antojo-icono { color: var(--rojo); transition: transform 0.25s ease; }
+.filtro-tab.rd-antojo:hover .rd-antojo-icono { transform: translateY(-2px) scale(1.06); }
+.filtro-tab.rd-antojo.is-active {
+  color: #fff;
+  background: linear-gradient(180deg, rgba(229, 62, 62, 0.16), rgba(229, 62, 62, 0.04)), var(--rd-panel);
+  border-color: var(--rojo);
+  box-shadow: 0 0 0 1px rgba(229, 62, 62, 0.35), 0 12px 30px -12px rgba(229, 62, 62, 0.55);
+}
+
+/* ---------- Encabezados de sección (v1) con el estilo nuevo ---------- */
+.carta-title { text-transform: uppercase; }
+
+/* ---------- Testimonios ---------- */
+.testimonios .google-rating { margin-top: 0; }
+.testimonio-card {
+  background: var(--rd-panel);
+  border: 1px solid var(--rd-borde);
+  border-radius: var(--rd-radio);
+}
+.testimonio-stars { color: var(--rojo); letter-spacing: 0.12em; }
+
+/* ---------- Nosotros: foto + texto ---------- */
+.about.rd-nosotros {
+  max-width: var(--rd-ancho);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.2rem;
+  align-items: center;
+  text-align: left;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+.rd-nosotros-media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: calc(var(--rd-radio) + 4px);
+  overflow: hidden;
+  border: 1px solid var(--rd-borde);
+}
+.rd-nosotros-media img { object-fit: cover; }
+.rd-nosotros .about-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 1.8rem;
+  height: 2px;
+  margin-right: 0.6rem;
+  vertical-align: middle;
+  background: var(--rojo);
+}
+.rd-nosotros .about-title { text-transform: uppercase; }
+.rd-nosotros .about-text { margin: 0; max-width: none; }
+.rd-nosotros .about-stats { justify-content: flex-start; }
+.rd-nosotros .about-stat { align-items: flex-start; }
+@media (min-width: 900px) {
+  .about.rd-nosotros { grid-template-columns: 0.9fr 1.1fr; gap: 3.5rem; }
+  .rd-nosotros-media { aspect-ratio: 4 / 5; }
+}
+
+/* ---------- Contacto ---------- */
+.contacto-box { background: var(--rd-panel); border: 1px solid var(--rd-borde); border-radius: calc(var(--rd-radio) + 4px); }
+
+/* ---------- ¿Listo para pedir? ---------- */
+.page-dark > .rd-seccion:last-child { padding-bottom: 4.5rem; }
+.rd-llamado {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.4rem;
+  align-items: center;
+  text-align: center;
+  padding: 2rem 1.5rem;
+  border-radius: calc(var(--rd-radio) + 4px);
+  border: 1px solid var(--rd-borde-rojo);
+  background: radial-gradient(120% 160% at 0% 50%, rgba(229, 62, 62, 0.16), transparent 50%), var(--rd-panel);
+  box-shadow: 0 30px 60px -30px rgba(229, 62, 62, 0.45);
+}
+.rd-llamado-icono { color: var(--rojo); margin: 0 auto; }
+.rd-llamado-titulo {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 4vw, 2.5rem);
+  line-height: 1;
+  color: var(--rojo);
+  text-transform: uppercase;
+}
+.rd-llamado-texto p { color: #d4d4d8; margin-top: 0.4rem; font-size: 0.95rem; }
+.rd-llamado-accion { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; }
+.rd-pagos { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.4rem; font-size: 0.75rem; color: var(--rd-texto-2); }
+.rd-pago {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #e4e4e7;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  border: 1px solid var(--rd-borde);
+  background: var(--rd-panel-2);
+}
+@media (min-width: 900px) {
+  .rd-llamado { grid-template-columns: auto 1fr auto; text-align: left; padding: 2rem 2.5rem; gap: 2rem; }
+  .rd-llamado-icono { margin: 0; }
+  .rd-llamado-accion { align-items: flex-end; }
+  .rd-pagos { justify-content: flex-end; }
+}
+
+/* ---------- Pie ---------- */
+.site-footer.rd-pie { text-align: left; padding: 3.5rem 1.25rem 1.5rem; border-top: 1px solid var(--rd-borde); }
+.rd-pie-grid {
+  max-width: var(--rd-ancho);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.2rem;
+}
+@media (min-width: 640px) { .rd-pie-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1000px) { .rd-pie-grid { grid-template-columns: 1.3fr 0.8fr 1.3fr 1fr; } }
+.rd-pie-logo { height: auto; width: 150px; }
+.rd-pie-marca p, .rd-pie-p { color: var(--rd-texto-2); font-size: 0.85rem; line-height: 1.6; margin: 0.9rem 0 1.1rem; }
+.rd-pie-titulo { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #fff; margin-bottom: 1rem; }
+.rd-pie ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.6rem; }
+.rd-pie nav a { color: var(--rd-texto-2); font-size: 0.88rem; text-decoration: none; transition: color 0.2s ease; }
+.rd-pie nav a:hover { color: #fff; }
+.rd-pie-info li { display: flex; gap: 0.55rem; align-items: flex-start; color: var(--rd-texto-2); font-size: 0.85rem; line-height: 1.5; }
+.rd-pie-info svg { color: var(--rojo); flex: 0 0 auto; margin-top: 0.2rem; }
+.rd-pie-info small { color: #71717a; }
+.rd-redes { display: flex; gap: 0.6rem; }
+.rd-redes a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 50%;
+  border: 1px solid var(--rd-borde);
+  color: #fff;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.rd-redes a:hover { border-color: var(--rojo); color: var(--rojo); }
+.rd-pie-copy { max-width: var(--rd-ancho); margin: 2.5rem auto 0; padding-top: 1.2rem; border-top: 1px solid var(--rd-borde); text-align: center; }
+
+/* ---------- Insignia de horario ----------
+   En el prototipo vive en el hero y se va al bajar. Fija (v1) tapaba los
+   títulos de cada sección. `absolute` sin padre posicionado = se queda
+   arriba de la página y se desplaza con ella. */
+.estado-flotante { position: absolute; }
+.rd-combo-p .rd-rojo { color: var(--rojo); }
+
+/* Carta completa: mismo ancho que el resto y 4 columnas antes (prototipo). */
+.catalogo { max-width: var(--rd-ancho); padding-left: 1.25rem; padding-right: 1.25rem; }
+@media (min-width: 1000px) { .catalogo-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.25rem; } }
+.rd-nosotros .about-title { font-size: clamp(1.9rem, 3.4vw, 2.7rem); line-height: 1.05; }
+.rd-nosotros .about-text p { font-size: 0.96rem; }
