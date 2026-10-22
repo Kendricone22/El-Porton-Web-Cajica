@@ -17,9 +17,12 @@
 
 export type Credencial = 'publica' | 'servidor';
 
-const URL_BASE = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const CLAVE_PUBLICA = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const CLAVE_SERVIDOR = process.env.SUPABASE_SERVICE_ROLE_KEY;
+/* .trim() a propósito: al pegar una clave en Vercel es fácil colar un salto de
+   línea o un espacio. Un salto de línea en una cabecera HTTP hace que fetch()
+   lance "Invalid value" y el login del panel falle sin explicación. */
+const URL_BASE = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+const CLAVE_PUBLICA = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+const CLAVE_SERVIDOR = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
 
 /**
  * Falla al arrancar si falta configuración, en vez de fallar a mitad de

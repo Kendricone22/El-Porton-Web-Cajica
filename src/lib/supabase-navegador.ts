@@ -24,8 +24,8 @@ let cliente: SupabaseClient | null = null;
 export function supabaseNavegador(): SupabaseClient {
   if (cliente) return cliente;
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const clave = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const clave = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
   if (!url || !clave) {
     throw new Error(
