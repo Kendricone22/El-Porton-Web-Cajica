@@ -138,7 +138,7 @@ export default function Carrito() {
   return (
     <>
       {/* ---------- botón flotante ---------- */}
-      {hidratado && unidades > 0 && (
+      {hidratado && (
         <button
           id="cart-fab"
           type="button"

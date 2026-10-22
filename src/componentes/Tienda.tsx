@@ -9,6 +9,7 @@
  *   Favoritos  → "Agregar" abre el mismo modal que el catálogo.
  *   Combo      → "Armar mi combo" cambia la categoría del catálogo y
  *                baja hasta él.
+ *   Cómo pedir → va justo antes de la carta (decisión del cliente).
  *   Catálogo   → la carta completa con su selector de categorías.
  *
  * Por eso la categoría activa vive AQUÍ y no dentro del catálogo: si
@@ -24,7 +25,7 @@ import Catalogo from './Catalogo';
 import ModalProducto from './ModalProducto';
 import Favoritos from './Favoritos';
 import BannerCombo from './BannerCombo';
-import { EncabezadoCarta } from './Secciones';
+import { ComoPedir, EncabezadoCarta } from './Secciones';
 
 export default function Tienda({
   menu,
@@ -48,6 +49,9 @@ export default function Tienda({
     <>
       <Favoritos menu={menu} onPersonalizar={setAbiertoId} />
       <BannerCombo onVer={irACombo} />
+
+      {/* Antes de la carta: el cliente ve cómo se pide antes de elegir. */}
+      <ComoPedir />
 
       <EncabezadoCarta
         id="menu-catalogo"

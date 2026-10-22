@@ -8,7 +8,7 @@ import Lightbox from '@/componentes/Lightbox';
 import InsigniaHorario from '@/componentes/InsigniaHorario';
 import DatosEstructurados from '@/componentes/DatosEstructurados';
 import FondoParticulas from '@/componentes/FondoParticulas';
-import { ComoPedir, Contacto, LlamadoPedido, Nosotros, PieDePagina, Testimonios } from '@/componentes/Secciones';
+import { Contacto, LlamadoPedido, Nosotros, PieDePagina, Testimonios } from '@/componentes/Secciones';
 
 /* =============================================================
  * PORTADA
@@ -19,8 +19,8 @@ import { ComoPedir, Contacto, LlamadoPedido, Nosotros, PieDePagina, Testimonios 
  *
  * Orden del rediseño (2026-10, sobre el prototipo aprobado por el
  * cliente):
- *   Hero → favoritos de la casa → banner de combo → "Elige tu antojo"
- *   (carta completa) → cómo pedir → testimonios → nosotros → contacto →
+ *   Hero → favoritos de la casa → banner de combo → cómo pedir →
+ *   "Elige tu antojo" (carta completa) → testimonios → nosotros → contacto →
  *   ¿listo para pedir? → pie.
  *
  * `.page-dark` envuelve nosotros/contacto/llamado: es un fondo negro
@@ -47,8 +47,6 @@ export default async function Portada() {
 
         {/* Favoritos, combo y la carta completa comparten estado con el modal. */}
         <Tienda menu={menu} categorias={CATEGORIES} />
-
-        <ComoPedir />
 
         <Testimonios />
 
