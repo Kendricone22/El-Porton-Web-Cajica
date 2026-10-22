@@ -2,6 +2,15 @@ import { NextResponse } from 'next/server';
 import { obtenerMenu } from '@/lib/menu-servidor';
 import { validarPedido } from '@/lib/precio';
 import { supabaseRest } from '@/lib/supabase';
+import {
+  crearLimitador,
+  esTrampa,
+  ipDe,
+  LIMITES,
+  MENSAJE_DEMASIADOS,
+  motivoDeBloqueo,
+  totalDeContentRange,
+} from '@/lib/antispam';
 
 /* =============================================================
  * POST /api/pedidos — la única puerta por la que entra un pedido.
@@ -37,6 +46,29 @@ const limpiar = (v: unknown, max: number): string =>
 const esperar = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 type Guardado = { id: string | null; error: string | null };
+
+/** Freno por conexión. Vive en la memoria de la instancia (ver antispam.ts). */
+const limitadorIp = crearLimitador({ max: LIMITES.ipMax, ventanaMs: LIMITES.ipVentanaMs });
+
+/**
+ * Cuenta los pedidos guardados desde `desdeMs` atrás (opcionalmente solo los
+ * de un teléfono). Devuelve `null` si no pudo contar: quien llama debe
+ * dejar pasar el pedido, nunca bloquear una venta por una caída de la base.
+ */
+async function contarPedidos(desdeMs: number, telefono?: string): Promise<number | null> {
+  try {
+    const desde = new Date(Date.now() - desdeMs).toISOString();
+    let ruta = `/rest/v1/orders?select=id&limit=1&created_at=gte.${encodeURIComponent(desde)}`;
+    if (telefono) ruta += `&customer_phone=eq.${encodeURIComponent(telefono)}`;
+    const res = await supabaseRest(ruta, { headers: { Prefer: 'count=exact' }, timeoutMs: 2500 }, 'servidor');
+    return res.ok ? totalDeContentRange(res.headers.get('content-range')) : null;
+  } catch {
+    return null;
+  }
+}
+
+const rechazoPorExceso = () =>
+  NextResponse.json({ ok: false, errores: [MENSAJE_DEMASIADOS] }, { status: 429, headers: { 'Retry-After': '300' } });
 
 /**
  * Guarda el pedido con reintentos y espera creciente (300ms, 900ms).
@@ -85,6 +117,23 @@ export async function POST(req: Request) {
   } catch {
     return NextResponse.json({ ok: false, errores: ['El cuerpo no es JSON válido.'] }, { status: 400 });
   }
+
+  /* ---------- 1b. anti-spam, capas baratas (sin tocar la base) ----------
+     Trampa: el campo `sitio_web` está oculto en el formulario; un cliente
+     real nunca lo rellena. A un bot se le responde "todo bien" sin guardar
+     nada, para que no sepa que lo detectamos y no pruebe otra cosa. */
+  if (esTrampa(cuerpo.sitio_web)) {
+    return NextResponse.json({
+      ok: true,
+      guardado: false,
+      pedidoId: null,
+      subtotal: 0,
+      items: [],
+      origenPrecio: 'ninguno',
+      advertencia: null,
+    });
+  }
+  if (!limitadorIp.permitir(ipDe(req.headers))) return rechazoPorExceso();
 
   /* ---------- 2. datos de despacho ---------- */
   const cliente = {
@@ -153,6 +202,19 @@ export async function POST(req: Request) {
       notes: limpiar(entrantes[i]?.notes, MAX_NOTAS),
     })),
   };
+
+  /* Capas con la base de datos: se hacen DESPUÉS de validar, para no
+     gastar consultas en pedidos mal formados. Si contar falla (`null`),
+     el pedido pasa: esta ruta nunca bloquea una venta por una incidencia. */
+  const [porTelefono, global] = await Promise.all([
+    contarPedidos(LIMITES.telefonoVentanaMs, cliente.customer_phone),
+    contarPedidos(LIMITES.globalVentanaMs),
+  ]);
+  const bloqueo = motivoDeBloqueo({ porTelefono, global });
+  if (bloqueo) {
+    console.warn(`[pedidos] bloqueado por exceso (${bloqueo}).`);
+    return rechazoPorExceso();
+  }
 
   const guardado = await guardarPedido(fila);
 

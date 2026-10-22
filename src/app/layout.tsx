@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Bebas_Neue, Inter, Playfair_Display } from 'next/font/google';
 import { ProveedorCarrito } from '@/estado/carrito';
+import { SITIO } from '@/lib/sitio';
 import './globals.css';
 import './estilos-v1.css';
 
@@ -43,7 +44,6 @@ const inter = Inter({
   variable: '--font-body',
 });
 
-const SITIO = 'https://el-porton-cajica.vercel.app';
 const TITULO = 'El Portón Cajicá — Comidas Rápidas & Pizzería Artesanal';
 const DESCRIPCION =
   'El Portón Cajicá: hamburguesas, perros, mazorcadas, salchipapas y pizzas artesanales. Pide fácil y rápido por WhatsApp.';

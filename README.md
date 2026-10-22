@@ -21,7 +21,11 @@ Supabase (Postgres + Auth + Storage) · Vercel.
   en el panel (precio, descripción, agotado, foto) vive en Supabase y se
   fusiona por encima.
 - **Seguridad**: las políticas RLS de Supabase protegen los datos; la clave de
-  servidor nunca llega al navegador.
+  servidor nunca llega al navegador. Cabeceras de seguridad en
+  `src/lib/cabeceras.ts`.
+- **Anti-spam de pedidos** (`src/lib/antispam.ts`): campo trampa invisible,
+  límite por conexión, por teléfono y tope global. Los umbrales son holgados
+  a propósito y, si la base de datos no responde, el pedido pasa igual.
 
 ## Puesta en marcha local
 
@@ -38,6 +42,7 @@ npm run dev                  # http://localhost:3000
 | `NEXT_PUBLIC_SUPABASE_URL` | URL del proyecto de Supabase |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Publishable key (pública) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Secret key. **Solo servidor, nunca con `NEXT_PUBLIC_`** |
+| `NEXT_PUBLIC_SITE_URL` | *(opcional)* dirección pública del sitio; ver «Cambio de dominio» |
 
 ## Scripts
 
@@ -55,6 +60,19 @@ Todo el esquema está en [`db/`](db/README.md). Para montar un proyecto de
 Supabase desde cero basta correr `db/reconstruir-todo.sql` (ver el README de esa
 carpeta), crear el usuario administrador en Authentication → Users y cerrar el
 registro público.
+
+## Cambio de dominio
+
+La dirección pública vive en un solo lugar (`src/lib/sitio.ts`). Al mover el
+dominio: definir `NEXT_PUBLIC_SITE_URL=https://dominio-nuevo.com` en Vercel y
+redesplegar. Con eso se actualizan `canonical`, `og:url`, los datos
+estructurados, `robots.txt` y `sitemap.xml`.
+
+## Integración continua
+
+`.github/workflows/ci.yml` corre tipos, tests y build en cada push y pull
+request. El lint es informativo (hay 10 errores conocidos de
+`react-hooks/set-state-in-effect`, pendientes de refactorizar).
 
 ## Despliegue (Vercel)
 

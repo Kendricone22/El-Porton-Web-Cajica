@@ -1,5 +1,6 @@
 import type { ProductoMenu } from '@/types/menu';
 import { CATEGORIES } from '@/data/menu';
+import { SITIO } from '@/lib/sitio';
 
 /* =============================================================
  * DATOS ESTRUCTURADOS (JSON-LD)
@@ -14,7 +15,6 @@ import { CATEGORIES } from '@/data/menu';
  * rastreadores que no ejecutan JS no lo veían nunca.
  * ============================================================= */
 
-const SITIO = 'https://el-porton-cajica.vercel.app';
 
 export default function DatosEstructurados({ menu }: { menu: ProductoMenu[] }) {
   const restaurante = {

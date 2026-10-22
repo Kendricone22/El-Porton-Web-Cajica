@@ -1,0 +1,52 @@
+name: CI
+
+# Corre en cada push a main y en cada pull request.
+# Si algo falla aquí, ese cambio NO debería publicarse.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci --no-audit --no-fund
+
+      - name: Tipos
+        run: npm run typecheck
+
+      - name: Tests
+        run: npm test
+
+      - name: Build de producción
+        run: npm run build
+        env:
+          # Valores de relleno: el build no necesita (ni debe tener) las claves
+          # reales. Si Supabase no responde, la carta cae al menú del código.
+          NEXT_PUBLIC_SUPABASE_URL: https://ci-relleno.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: sb_publishable_relleno_para_ci
+          SUPABASE_SERVICE_ROLE_KEY: sb_secret_relleno_para_ci
+
+      # Deuda conocida: 10 errores de `react-hooks/set-state-in-effect`
+      # (patrón de cargar datos al montar). Se reporta pero no bloquea;
+      # quitar `continue-on-error` cuando esas pantallas se refactoricen.
+      - name: Lint (informativo)
+        run: npm run lint
+        continue-on-error: true

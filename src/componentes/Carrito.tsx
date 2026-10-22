@@ -36,6 +36,7 @@ export default function Carrito() {
   const [enviando, setEnviando] = useState(false);
   const [aviso, setAviso] = useState<string | null>(null);
   const [rebote, setRebote] = useState(false);
+  const trampa = useRef<HTMLInputElement>(null);
 
   /* Datos del cliente guardados (solo en el navegador). */
   useEffect(() => {
@@ -99,7 +100,7 @@ export default function Carrito() {
       const res = await fetch('/api/pedidos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...datos, items }),
+        body: JSON.stringify({ ...datos, items, sitio_web: trampa.current?.value ?? '' }),
       });
       const j = await res.json();
 
@@ -316,6 +317,15 @@ export default function Carrito() {
                     momento por WhatsApp.
                   </span>
                 </label>
+
+                {/* Trampa anti-bots: fuera de pantalla, sin foco y oculta para lectores
+                    de pantalla. Una persona nunca la rellena; un bot sí. */}
+                <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1, overflow: 'hidden' }}>
+                  <label>
+                    No escribas aquí
+                    <input ref={trampa} type="text" name="sitio_web" tabIndex={-1} autoComplete="off" defaultValue="" />
+                  </label>
+                </div>
               </form>
             </>
           )}
