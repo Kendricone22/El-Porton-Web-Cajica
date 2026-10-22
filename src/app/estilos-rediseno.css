@@ -147,32 +147,33 @@
 }
 @media (min-width: 900px) { .rd-favoritos-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.25rem; } }
 
-/* ---------- Banner de combo: a todo el ancho, como el hero ---------- */
+/* ---------- Banner de combo: tarjeta del ancho del contenido ---------- */
 .rd-combo-full {
   position: relative;
-  margin-top: 4.5rem;
-  min-height: 24rem;
+  width: calc(100% - 2.5rem);
+  max-width: var(--rd-ancho);
+  margin: 4.5rem auto 0;
+  min-height: clamp(21rem, 26vw, 26rem);
   display: flex;
   align-items: center;
   overflow: hidden;
-  background: #070708;
+  border-radius: calc(var(--rd-radio) + 4px);
+  /* Borde en degradado rojo → negro (prototipo): el fondo pinta el interior
+     y el degradado solo asoma en el borde transparente de 1px. */
+  border: 1px solid transparent;
+  background:
+    linear-gradient(#070708, #070708) padding-box,
+    linear-gradient(115deg, var(--rojo) 0%, rgba(229, 62, 62, 0.25) 35%, rgba(0, 0, 0, 0.9) 60%, rgba(229, 62, 62, 0.55) 100%) border-box;
+  box-shadow: 0 30px 60px -30px rgba(229, 62, 62, 0.35);
 }
-/* Bordes arriba y abajo: degradado rojo → negro → rojo (prototipo). */
-.rd-combo-full::before,
-.rd-combo-full::after {
-  content: '';
+.rd-combo-fondo {
   position: absolute;
-  left: 0;
-  right: 0;
-  z-index: 3;
-  height: 1px;
-  background: linear-gradient(90deg, var(--rojo) 0%, rgba(229, 62, 62, 0.35) 30%, rgba(0, 0, 0, 0) 55%, rgba(229, 62, 62, 0.35) 80%, var(--rojo) 100%);
-  box-shadow: 0 0 18px 1px rgba(229, 62, 62, 0.35);
+  inset: 0 0 0 28%;   /* la foto ocupa los dos tercios derechos… */
+  /* …y se funde hacia la izquierda con el fondo oscuro, sin corte. */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 30%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 30%);
 }
-.rd-combo-full::before { top: 0; }
-.rd-combo-full::after { bottom: 0; }
-.rd-combo-fondo { position: absolute; inset: 0; }
-.rd-combo-fondo img { object-fit: cover; object-position: 78% 50%; }
+.rd-combo-fondo img { object-fit: cover; object-position: 100% 55%; }
 .rd-combo-velo {
   position: absolute;
   inset: 0;
@@ -185,10 +186,9 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: var(--rd-ancho);
-  margin: 0 auto;
-  padding: 3.5rem 1.25rem;
+  padding: 3rem 1.6rem;
 }
+@media (min-width: 900px) { .rd-combo-contenido { padding: 3rem 3.2rem; } }
 .rd-combo-titulo {
   font-family: var(--font-display);
   font-size: clamp(2.3rem, 5vw, 3.6rem);
@@ -203,12 +203,12 @@
    foto va ARRIBA (16:9, se ven papas + hamburguesa + lata) y el texto debajo. */
 @media (max-width: 767.98px) {
   .rd-combo-full { display: block; min-height: 0; }
-  .rd-combo-fondo { position: relative; aspect-ratio: 16 / 9; }
-  .rd-combo-fondo img { object-position: 78% 50%; }
+  .rd-combo-fondo { position: relative; inset: auto; aspect-ratio: 4 / 3; -webkit-mask-image: none; mask-image: none; }
+  .rd-combo-fondo img { object-position: 95% 50%; }
   .rd-combo-velo {
     top: 0;
     bottom: auto;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 4 / 3;
     background: linear-gradient(0deg, #070708 0%, rgba(7, 7, 8, 0) 35%);
   }
   .rd-combo-contenido { padding: 0.5rem 1.25rem 2.4rem; }
