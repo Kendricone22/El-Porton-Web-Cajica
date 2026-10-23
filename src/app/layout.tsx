@@ -61,6 +61,12 @@ export const metadata: Metadata = {
   title: TITULO,
   description: DESCRIPCION,
   alternates: { canonical: '/' },
+  /* Verificación de Google Search Console. Se activa definiendo
+     NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION en Vercel (el código que da
+     Search Console); sin la variable no se añade ninguna etiqueta. */
+  verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim()
+    ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION.trim() }
+    : undefined,
   icons: {
     icon: [
       { url: '/assets/favicon-32.png', sizes: '32x32', type: 'image/png' },
