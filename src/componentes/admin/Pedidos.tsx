@@ -17,6 +17,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { supabaseNavegador } from '@/lib/supabase-navegador';
+import BotonesEstado from './BotonesEstado';
 import {
   ESTADOS,
   ETIQUETA_ESTADO,
@@ -30,22 +31,32 @@ import {
 
 const POR_PAGINA = 50;
 
-export default function Pedidos({ recargarToken }: { recargarToken: number }) {
+type Filtro = 'todos' | EstadoPedido;
+
+export default function Pedidos({
+  recargarToken,
+  alCambiar,
+}: {
+  recargarToken: number;
+  /** Avisa al panel para que actualice el contador de pedidos nuevos. */
+  alCambiar?: () => void;
+}) {
   const sb = supabaseNavegador();
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [total, setTotal] = useState<number | null>(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [guardando, setGuardando] = useState<string | null>(null);
+  const [filtro, setFiltro] = useState<Filtro>('todos');
 
   const cargar = useCallback(
     async (desde: number) => {
       setError(null);
       if (desde === 0) setCargando(true);
 
-      const { data, error: err, count } = await sb
-        .from('orders')
-        .select('*', { count: 'exact' })
+      let consulta = sb.from('orders').select('*', { count: 'exact' });
+      if (filtro !== 'todos') consulta = consulta.eq('status', filtro);
+      const { data, error: err, count } = await consulta
         .order('created_at', { ascending: false })
         .range(desde, desde + POR_PAGINA - 1);
 
@@ -57,7 +68,7 @@ export default function Pedidos({ recargarToken }: { recargarToken: number }) {
       setTotal(count ?? null);
       setPedidos((prev) => (desde === 0 ? (data as Pedido[]) : [...prev, ...(data as Pedido[])]));
     },
-    [sb],
+    [sb, filtro],
   );
 
   useEffect(() => {
@@ -78,17 +89,45 @@ export default function Pedidos({ recargarToken }: { recargarToken: number }) {
       // el panel muestra un estado que la base no tiene.
       if (anterior) setPedidos((ps) => ps.map((p) => (p.id === id ? { ...p, status: anterior } : p)));
       setError('No se pudo actualizar el estado: ' + err.message);
+      return;
     }
+    alCambiar?.();
   }
-
-  if (cargando) return <p className="loading">Cargando pedidos…</p>;
-  if (error && !pedidos.length) return <p className="empty-state">{error}</p>;
-  if (!pedidos.length) return <p className="empty-state">Aún no hay pedidos.</p>;
 
   const hayMas = total !== null && pedidos.length < total;
 
+  const chips = (
+    <div className="pn-chips" role="tablist" aria-label="Filtrar pedidos por estado">
+      {(['todos', ...ESTADOS] as Filtro[]).map((f) => (
+        <button
+          key={f}
+          type="button"
+          role="tab"
+          aria-selected={filtro === f}
+          className={`pn-chip${filtro === f ? ' is-activo' : ''}`}
+          onClick={() => setFiltro(f)}
+        >
+          {f === 'todos' ? 'Todos' : ETIQUETA_ESTADO[f]}
+        </button>
+      ))}
+    </div>
+  );
+
+  if (cargando) return <>{chips}<p className="loading">Cargando pedidos…</p></>;
+  if (error && !pedidos.length) return <>{chips}<p className="empty-state">{error}</p></>;
+  if (!pedidos.length)
+    return (
+      <>
+        {chips}
+        <p className="empty-state">
+          {filtro === 'todos' ? 'Aún no hay pedidos.' : `No hay pedidos en "${ETIQUETA_ESTADO[filtro]}".`}
+        </p>
+      </>
+    );
+
   return (
     <>
+      {chips}
       {error && <p className="login-error">{error}</p>}
 
       {total !== null && (
@@ -144,18 +183,11 @@ export default function Pedidos({ recargarToken }: { recargarToken: number }) {
             </ul>
 
             <div className="order-foot">
-              <span>Estado:</span>
-              <select
-                value={o.status}
-                disabled={guardando === o.id}
-                onChange={(e) => void cambiarEstado(o.id, e.target.value as EstadoPedido)}
-              >
-                {ESTADOS.map((s) => (
-                  <option key={s} value={s}>
-                    {ETIQUETA_ESTADO[s]}
-                  </option>
-                ))}
-              </select>
+              <BotonesEstado
+                actual={o.status}
+                deshabilitado={guardando === o.id}
+                onCambiar={(nuevo) => void cambiarEstado(o.id, nuevo)}
+              />
             </div>
           </article>
         ))}

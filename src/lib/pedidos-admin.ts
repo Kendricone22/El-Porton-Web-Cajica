@@ -2,11 +2,16 @@
  * PEDIDOS EN EL PANEL — tipos y funciones puras
  * ============================================================= */
 
-export const ESTADOS = ['nuevo', 'en_camino', 'entregado', 'cancelado'] as const;
+/* El orden es el del flujo real: así los botones se leen de izquierda a
+   derecha en el orden en que avanza un pedido. "preparando" se añadió en
+   el rediseño del panel; la columna `status` es texto libre, así que no
+   hizo falta tocar la base. */
+export const ESTADOS = ['nuevo', 'preparando', 'en_camino', 'entregado', 'cancelado'] as const;
 export type EstadoPedido = (typeof ESTADOS)[number];
 
 export const ETIQUETA_ESTADO: Record<EstadoPedido, string> = {
   nuevo: 'Nuevo',
+  preparando: 'Preparando',
   en_camino: 'En camino',
   entregado: 'Entregado',
   cancelado: 'Cancelado',

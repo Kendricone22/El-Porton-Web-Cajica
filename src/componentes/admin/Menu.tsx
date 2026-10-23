@@ -25,7 +25,14 @@ import {
 } from '@/lib/menu-admin';
 import ModalMenu from './ModalMenu';
 
-export default function Menu({ recargarToken }: { recargarToken: number }) {
+export default function Menu({
+  recargarToken,
+  iniciarCreando = false,
+}: {
+  recargarToken: number;
+  /** Si viene del botón "Nuevo producto" del inicio, abre el formulario de alta. */
+  iniciarCreando?: boolean;
+}) {
   const sb = supabaseNavegador();
   const [filas, setFilas] = useState<FilaMenu[] | null>(null);
   const [cargando, setCargando] = useState(true);
@@ -33,7 +40,7 @@ export default function Menu({ recargarToken }: { recargarToken: number }) {
   const [aviso, setAviso] = useState<string | null>(null);
   const [importando, setImportando] = useState(false);
   /** null = cerrado · 'nuevo' = alta · FilaMenu = edición. */
-  const [editando, setEditando] = useState<FilaMenu | 'nuevo' | null>(null);
+  const [editando, setEditando] = useState<FilaMenu | 'nuevo' | null>(iniciarCreando ? 'nuevo' : null);
 
   const cargar = useCallback(async () => {
     setCargando(true);

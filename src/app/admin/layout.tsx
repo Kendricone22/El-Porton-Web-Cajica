@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './estilos-admin.css';
+import './estilos-panel.css';
 
 /* =============================================================
  * LAYOUT DEL PANEL

@@ -45,7 +45,14 @@ const PERIODO_ETIQUETA: Record<Granularidad, string> = {
   mes: 'Mensual',
 };
 
-export default function Analitica({ recargarToken }: { recargarToken: number }) {
+export default function Analitica({
+  recargarToken,
+  incluirVisitas = true,
+}: {
+  recargarToken: number;
+  /** En el panel nuevo, Visitas tiene su propia sección en el menú lateral. */
+  incluirVisitas?: boolean;
+}) {
   const sb = supabaseNavegador();
   const [totales, setTotales] = useState<Totales | null>(null);
   const [embudo, setEmbudo] = useState<number[] | null>(null);
@@ -136,10 +143,12 @@ export default function Analitica({ recargarToken }: { recargarToken: number }) 
         <Ventas gran={gran} tabla={tabla} recargarToken={recargarToken} />
       </div>
 
-      <div className="panel-box">
-        <h3>Visitas a la página</h3>
-        <Visitas recargarToken={recargarToken} />
-      </div>
+      {incluirVisitas && (
+        <div className="panel-box">
+          <h3>Visitas a la página</h3>
+          <Visitas recargarToken={recargarToken} />
+        </div>
+      )}
 
       <div className="panel-box">
         <h3>Embudo (acciones registradas)</h3>

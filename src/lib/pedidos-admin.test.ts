@@ -19,7 +19,7 @@ const linea = (o: Partial<LineaPedidoGuardada> = {}): LineaPedidoGuardada => ({
 /* ------------------------------------------------------------------ */
 describe('estados del pedido', () => {
   it('son los cuatro de v1, en orden', () => {
-    expect(ESTADOS).toEqual(['nuevo', 'en_camino', 'entregado', 'cancelado']);
+    expect(ESTADOS).toEqual(['nuevo', 'preparando', 'en_camino', 'entregado', 'cancelado']);
   });
 
   it('todos tienen etiqueta legible', () => {
