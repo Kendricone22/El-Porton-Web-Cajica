@@ -23,6 +23,7 @@ import { CLAVE_FORMULARIO, FORMULARIO_VACIO, type DatosFormulario } from '@/type
 import { useCarrito } from '@/estado/carrito';
 import { camposIncompletos, detallesDe, formatearMiles, leerFormulario } from '@/lib/formulario';
 import { construirMensaje, urlWhatsApp, type LineaPedido } from '@/lib/whatsapp';
+import { registrarEvento } from '@/lib/rastreo-navegador';
 
 const fmt = (n: number) => '$' + n.toLocaleString('es-CO');
 const TELEFONO = (BRAND as { whatsapp: string }).whatsapp;
@@ -125,6 +126,7 @@ export default function Carrito() {
       console.warn('[carrito] sin respuesta del servidor; se envía con los precios del navegador.');
     }
 
+    registrarEvento('order_sent', { total: totalFinal });
     window.open(urlWhatsApp(construirMensaje(lineas, datos, totalFinal), TELEFONO), '_blank');
 
     vaciar();
@@ -144,7 +146,10 @@ export default function Carrito() {
           type="button"
           className={`cart-fab${rebote ? ' bump' : ''}`}
           aria-label="Ver tu pedido"
-          onClick={() => setAbierto(true)}
+          onClick={() => {
+            setAbierto(true);
+            registrarEvento('checkout_opened');
+          }}
         >
           <span className="cart-fab-count">{unidades}</span>
           <span className="cart-fab-icon" aria-hidden="true">

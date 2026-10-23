@@ -8,6 +8,7 @@ import Lightbox from '@/componentes/Lightbox';
 import InsigniaHorario from '@/componentes/InsigniaHorario';
 import DatosEstructurados from '@/componentes/DatosEstructurados';
 import FondoParticulas from '@/componentes/FondoParticulas';
+import Rastreo from '@/componentes/Rastreo';
 import { Contacto, LlamadoPedido, Nosotros, PieDePagina, Testimonios } from '@/componentes/Secciones';
 
 /* =============================================================
@@ -33,6 +34,7 @@ export default async function Portada() {
   return (
     <>
       <DatosEstructurados menu={menu} />
+      <Rastreo />
 
       {/* Va primero: es el fondo de TODA la página (fijo, z-index −1).
           `.hero` y `.page-dark` lo tapan con negro opaco donde no debe

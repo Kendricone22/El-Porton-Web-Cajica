@@ -27,6 +27,7 @@ import { Login, RetoMFA } from '@/componentes/admin/Acceso';
 import Pedidos from '@/componentes/admin/Pedidos';
 import Analitica from '@/componentes/admin/Analitica';
 import Visitas from '@/componentes/admin/Visitas';
+import Origenes from '@/componentes/admin/Origenes';
 import Menu from '@/componentes/admin/Menu';
 import Resumen, { type Seccion } from '@/componentes/admin/Resumen';
 import ModalSeguridad from '@/componentes/admin/ModalSeguridad';
@@ -249,10 +250,13 @@ export default function PanelAdmin() {
             {seccion === 'menu' && <Menu recargarToken={recargarToken} iniciarCreando={creandoProducto} />}
             {seccion === 'ventas' && <Analitica recargarToken={recargarToken} incluirVisitas={false} />}
             {seccion === 'visitas' && (
-              <div className="panel-box">
-                <h3>Visitas a la página</h3>
-                <Visitas recargarToken={recargarToken} />
-              </div>
+              <>
+                <div className="panel-box">
+                  <h3>Visitas a la página</h3>
+                  <Visitas recargarToken={recargarToken} />
+                </div>
+                <Origenes recargarToken={recargarToken} />
+              </>
             )}
           </main>
         </div>

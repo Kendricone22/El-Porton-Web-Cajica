@@ -25,6 +25,7 @@
  * quien sí tiene cosas.
  * ============================================================= */
 
+import { registrarEvento } from '@/lib/rastreo-navegador';
 import { createContext, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { CLAVE_CARRITO, type ItemCarrito } from '@/types/carrito';
@@ -123,7 +124,10 @@ export function ProveedorCarrito({ children }: { children: ReactNode }) {
       subtotal: subtotal(items),
       unidades: contar(items),
       hidratado,
-      agregarItem: (item) => despachar({ tipo: 'agregar', item }),
+      agregarItem: (item) => {
+        despachar({ tipo: 'agregar', item });
+        registrarEvento('add_to_cart');
+      },
       cambiarQty: (hash, delta) => despachar({ tipo: 'cantidad', hash, delta }),
       quitar: (hash) => despachar({ tipo: 'eliminar', hash }),
       vaciar: () => despachar({ tipo: 'vaciar' }),
