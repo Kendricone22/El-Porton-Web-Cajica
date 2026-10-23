@@ -194,7 +194,8 @@ export default function PanelAdmin() {
             >
               <Icono nombre="hamburguesaMenu" size={22} />
             </button>
-            <div className="pn-cabecera-titulo">
+            {/* `key`: al cambiar de sección el título vuelve a entrar animado. */}
+            <div className="pn-cabecera-titulo pn-entra" key={seccion}>
               <h1>{titulo}</h1>
               <p>{seccion === 'inicio' ? `${sub} · ${fechaLarga()}` : sub}</p>
             </div>
@@ -229,7 +230,9 @@ export default function PanelAdmin() {
             </div>
           </header>
 
-          <main className="pn-contenido">
+          {/* `key={seccion}` rehace el bloque al cambiar de sección, así la
+              entrada en cascada (estilos-panel.css) se repite cada vez. */}
+          <main className="pn-contenido pn-seccion" key={seccion}>
             {seccion === 'inicio' && (
               <Resumen
                 recargarToken={recargarToken}

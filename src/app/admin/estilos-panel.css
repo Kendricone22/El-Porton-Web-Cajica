@@ -381,3 +381,125 @@
   .pn-anillo { width: 5.5rem; height: 5.5rem; }
   .pn-estado--aparte { margin-left: 0; }
 }
+
+/* =============================================================
+ * ANIMACIONES (inspiradas en el video de referencia del cliente)
+ *
+ *  1. Entrada: cada bloque aparece desenfocado y un poco más abajo, y
+ *     se enfoca al subir. En cascada: uno detrás de otro.
+ *  2. Gráfica: la línea se dibuja, el área se funde y los puntos saltan.
+ *  3. Anillo de la tienda: se traza al entrar.
+ *  4. Tarjetas: se elevan al pasar el mouse.
+ *  5. Esqueletos con brillo mientras cargan los datos.
+ *
+ * Se repiten al cambiar de sección porque el contenedor lleva
+ * `key={seccion}` (page.tsx) y React lo vuelve a montar.
+ * ============================================================= */
+
+@keyframes pn-entrar {
+  from { opacity: 0; transform: translateY(16px); filter: blur(8px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+@keyframes pn-deslizar {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes pn-trazo { to { stroke-dashoffset: 0; } }
+@keyframes pn-aparecer { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pn-saltar { 0% { transform: scale(0); } 70% { transform: scale(1.35); } 100% { transform: scale(1); } }
+@keyframes pn-brillo { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+/* 1. Entrada en cascada ---------------------------------------
+   Solo se animan las TARJETAS, nunca sus contenedores: animar ambos
+   sumaría dos desenfoques y dos retrasos y se vería pesado. */
+.pn-entra,
+.pn-seccion > :not(.pn-resumen):not(#orders-list),
+#orders-list > .order-card,
+.pn-kpis > *,
+.pn-fila > :not(.pn-columna),
+.pn-columna > *,
+.pn-resumen > .pn-tarjeta {
+  animation: pn-entrar 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+/* Inicio: indicadores → gráfica y tienda → listas → accesos. */
+.pn-kpis > :nth-child(2) { animation-delay: 70ms; }
+.pn-kpis > :nth-child(3) { animation-delay: 140ms; }
+.pn-kpis > :nth-child(4) { animation-delay: 210ms; }
+.pn-fila--grafica > :nth-child(1) { animation-delay: 220ms; }
+.pn-fila--grafica > :nth-child(2) { animation-delay: 300ms; }
+.pn-fila--listas > :nth-child(1) { animation-delay: 360ms; }
+.pn-columna > :nth-child(1) { animation-delay: 430ms; }
+.pn-columna > :nth-child(2) { animation-delay: 500ms; }
+.pn-resumen > .pn-tarjeta { animation-delay: 560ms; }
+/* Otras secciones: sus bloques uno tras otro. */
+.pn-seccion > :nth-child(2) { animation-delay: 80ms; }
+.pn-seccion > :nth-child(3) { animation-delay: 160ms; }
+.pn-seccion > :nth-child(n + 4) { animation-delay: 240ms; }
+#orders-list > :nth-child(1) { animation-delay: 160ms; }
+#orders-list > :nth-child(2) { animation-delay: 230ms; }
+#orders-list > :nth-child(3) { animation-delay: 300ms; }
+#orders-list > :nth-child(4) { animation-delay: 370ms; }
+#orders-list > :nth-child(n + 5) { animation-delay: 440ms; }
+
+/* Filas de listas: se deslizan desde la izquierda, una a una. */
+.pn-tabla tbody tr,
+.pn-top li,
+.pn-actividad li {
+  animation: pn-deslizar 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(400ms + var(--i, 0) * 70ms);
+}
+
+/* 2. Gráfica --------------------------------------------------- */
+.pn-grafica-linea { stroke-dasharray: 1; stroke-dashoffset: 1; animation: pn-trazo 1.3s cubic-bezier(0.65, 0, 0.35, 1) 0.35s forwards; }
+.pn-grafica-area { animation: pn-aparecer 0.9s ease 0.9s both; }
+.pn-grafica-punto {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pn-saltar 0.45s ease both;
+  animation-delay: calc(0.45s + var(--i, 0) * 0.17s);
+}
+
+/* 3. Anillo de la tienda: el trazo se dibuja sobre el borde tenue. */
+.pn-anillo { position: relative; border-color: rgba(255, 255, 255, 0.06); }
+.pn-anillo-trazo { position: absolute; inset: -6px; width: calc(100% + 12px); height: calc(100% + 12px); transform: rotate(-90deg); }
+.pn-anillo-trazo circle {
+  fill: none;
+  stroke: var(--rojo);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: pn-trazo 1.4s cubic-bezier(0.65, 0, 0.35, 1) 0.5s forwards;
+}
+.pn-anillo.is-abierta { border-color: rgba(255, 255, 255, 0.06); }
+.pn-anillo.is-abierta .pn-anillo-trazo circle { stroke: #22c55e; }
+
+/* 4. Tarjetas que se elevan (whileHover y:-5 del video) ---------- */
+.pn-kpi,
+.pn-accion,
+.pn .order-card {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.pn-kpi:hover,
+.pn .order-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(229, 62, 62, 0.35);
+  box-shadow: 0 18px 40px -22px rgba(0, 0, 0, 0.9);
+}
+.pn-accion:hover { transform: translateY(-5px); }
+
+/* Ítem activo del menú lateral: aparece con un pequeño "pop". */
+.pn-nav-item.is-activo { animation: pn-saltar-suave 0.35s ease both; }
+@keyframes pn-saltar-suave { from { transform: scale(0.94); opacity: 0.6; } to { transform: none; opacity: 1; } }
+
+/* 5. Esqueletos ------------------------------------------------- */
+.pn-esqueleto { display: flex; flex-direction: column; gap: 0.6rem; padding: 0.2rem 0; }
+.pn-esqueleto span {
+  display: block;
+  height: 0.9rem;
+  border-radius: 6px;
+  background: linear-gradient(100deg, #1c1c21 30%, #2a2a31 50%, #1c1c21 70%);
+  background-size: 200% 100%;
+  animation: pn-brillo 1.4s ease-in-out infinite;
+}
+.pn-kpi-valor .pn-esqueleto { padding: 0.1rem 0; width: 8rem; }

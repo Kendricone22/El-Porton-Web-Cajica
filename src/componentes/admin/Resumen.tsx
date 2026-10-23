@@ -25,6 +25,7 @@ import { dinero, ETIQUETA_ESTADO, type EstadoPedido, type Pedido } from '@/lib/p
 import { coordX, coordY, escalaY, formatoCorto, marcasY, rutaArea, rutaLinea, type FilaTop, type Marco, type PuntoSerie } from '@/lib/ventas';
 import { clientesUnicos, fechaBogota, haceCuanto, inicioDiaBogota, kpisDeSerie, variacion, type Kpis } from '@/lib/panel';
 import ExportarCSV from './ExportarCSV';
+import { Contador, Esqueleto } from './Animaciones';
 import { Icono, type NombreIcono } from '../Iconos';
 
 export type Seccion = 'inicio' | 'pedidos' | 'menu' | 'ventas' | 'visitas';
@@ -121,10 +122,10 @@ export default function Resumen({
 
       {/* ---------- indicadores ---------- */}
       <div className="pn-kpis">
-        <Kpi icono="dinero" tono="rojo" titulo="Ventas del día" valor={kpis ? dinero(kpis.ventas.hoy) : '…'} hoy={kpis?.ventas.hoy} ayer={kpis?.ventas.ayer} />
-        <Kpi icono="bolsa" tono="rojo" titulo="Pedidos del día" valor={kpis ? String(kpis.pedidos.hoy) : '…'} hoy={kpis?.pedidos.hoy} ayer={kpis?.pedidos.ayer} />
-        <Kpi icono="usuarios" tono="ambar" titulo="Clientes únicos" valor={clientes ? String(clientes.hoy) : '…'} hoy={clientes?.hoy} ayer={clientes?.ayer} />
-        <Kpi icono="recibo" tono="verde" titulo="Ticket promedio" valor={kpis ? dinero(kpis.ticket.hoy) : '…'} hoy={kpis?.ticket.hoy} ayer={kpis?.ticket.ayer} />
+        <Kpi icono="dinero" tono="rojo" titulo="Ventas del día" valor={kpis?.ventas.hoy} formato={dinero} ayer={kpis?.ventas.ayer} />
+        <Kpi icono="bolsa" tono="rojo" titulo="Pedidos del día" valor={kpis?.pedidos.hoy} ayer={kpis?.pedidos.ayer} />
+        <Kpi icono="usuarios" tono="ambar" titulo="Clientes únicos" valor={clientes?.hoy} ayer={clientes?.ayer} />
+        <Kpi icono="recibo" tono="verde" titulo="Ticket promedio" valor={kpis?.ticket.hoy} formato={dinero} ayer={kpis?.ticket.ayer} />
       </div>
 
       <div className="pn-fila pn-fila--grafica">
@@ -136,7 +137,7 @@ export default function Resumen({
               Ver ventas
             </button>
           </header>
-          {serie ? <Grafica serie={serie} /> : <p className="loading">Cargando…</p>}
+          {serie ? <Grafica serie={serie} /> : <Esqueleto lineas={5} alto="1.6rem" />}
         </section>
 
         {/* ---------- estado de la tienda ---------- */}
@@ -159,6 +160,9 @@ export default function Resumen({
               </p>
             </div>
             <div className={`pn-anillo ${tienda.abierto ? 'is-abierta' : ''}`} aria-hidden="true">
+              <svg className="pn-anillo-trazo" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" pathLength={1} />
+              </svg>
               <Icono nombre="tienda" size={30} />
               <small>{tienda.abierto ? 'Abierto' : 'Cerrado'}</small>
             </div>
@@ -176,7 +180,7 @@ export default function Resumen({
             </button>
           </header>
           {!recientes ? (
-            <p className="loading">Cargando…</p>
+            <Esqueleto lineas={4} />
           ) : !recientes.length ? (
             <p className="empty-state">Aún no hay pedidos.</p>
           ) : (
@@ -192,8 +196,8 @@ export default function Resumen({
                   </tr>
                 </thead>
                 <tbody>
-                  {recientes.map((p) => (
-                    <tr key={p.id}>
+                  {recientes.map((p, i) => (
+                    <tr key={p.id} style={{ '--i': i } as React.CSSProperties}>
                       <td>{p.customer_name}</td>
                       <td className="pn-tenue">
                         {(p.items ?? []).map((it) => `${it.name} x${it.qty}`).join(', ')}
@@ -221,7 +225,7 @@ export default function Resumen({
               <span className="pn-tenue pn-chico">Últimos 30 días</span>
             </header>
             {!top ? (
-              <p className="loading">Cargando…</p>
+              <Esqueleto lineas={4} />
             ) : !top.length ? (
               <p className="empty-state">Aún no hay ventas registradas.</p>
             ) : (
@@ -229,7 +233,7 @@ export default function Resumen({
                 {top.map((t, i) => {
                   const foto = fotoDe(t.producto);
                   return (
-                    <li key={t.producto}>
+                    <li key={t.producto} style={{ '--i': i } as React.CSSProperties}>
                       <span className="pn-top-n">{i + 1}</span>
                       <span className="pn-top-foto">
                         {foto ? <Image src={foto} alt="" width={44} height={44} /> : <span>🍽️</span>}
@@ -250,13 +254,13 @@ export default function Resumen({
           <section className="pn-tarjeta">
             <h3>Actividad reciente</h3>
             {!actividad ? (
-              <p className="loading">Cargando…</p>
+              <Esqueleto lineas={4} />
             ) : !actividad.length ? (
               <p className="empty-state">Sin actividad todavía.</p>
             ) : (
               <ul className="pn-actividad">
                 {actividad.map((a, i) => (
-                  <li key={i}>
+                  <li key={i} style={{ '--i': i } as React.CSSProperties}>
                     <span className={`pn-act-icono pn-act-icono--${a.tipo}`} aria-hidden="true">
                       <Icono nombre={a.tipo === 'pedido' ? 'carrito' : 'lapiz'} size={18} />
                     </span>
@@ -315,16 +319,18 @@ function Kpi({
   tono,
   titulo,
   valor,
-  hoy,
+  formato,
   ayer,
 }: {
   icono: NombreIcono;
   tono: 'rojo' | 'ambar' | 'verde';
   titulo: string;
-  valor: string;
-  hoy?: number;
+  /** `undefined` mientras carga: se muestra un esqueleto. */
+  valor?: number;
+  formato?: (n: number) => string;
   ayer?: number;
 }) {
+  const hoy = valor;
   const v = hoy === undefined || ayer === undefined ? undefined : variacion(hoy, ayer);
   return (
     <div className="pn-kpi">
@@ -333,7 +339,9 @@ function Kpi({
       </span>
       <div>
         <p className="pn-kpi-titulo">{titulo}</p>
-        <p className="pn-kpi-valor">{valor}</p>
+        <p className="pn-kpi-valor">
+          {valor === undefined ? <Esqueleto lineas={1} alto="1.6rem" /> : <Contador valor={valor} formato={formato} />}
+        </p>
         <p className={`pn-kpi-var${v === null || v === undefined ? '' : v >= 0 ? ' is-sube' : ' is-baja'}`}>
           {v === undefined ? ' ' : v === null ? 'Sin datos de ayer' : `${v >= 0 ? '↗' : '↘'} ${Math.abs(v)}% vs ayer`}
         </p>
@@ -362,15 +370,22 @@ function Grafica({ serie }: { serie: PuntoSerie[] }) {
           </text>
         </g>
       ))}
-      <path d={rutaArea(valores, escala.tope, MARCO)} fill="url(#pnGrad)" />
-      <path d={rutaLinea(valores, escala.tope, MARCO)} className="pn-grafica-linea" />
+      <path d={rutaArea(valores, escala.tope, MARCO)} fill="url(#pnGrad)" className="pn-grafica-area" />
+      {/* pathLength="1": el trazo se anima de 0 a 1 sin medir la línea. */}
+      <path d={rutaLinea(valores, escala.tope, MARCO)} className="pn-grafica-linea" pathLength={1} />
       {serie.map((p, i) => {
         const x = coordX(i, serie.length, MARCO);
         const [y, m, d] = String(p.inicio).split('-').map(Number);
         const dia = DIAS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
         return (
           <g key={p.inicio}>
-            <circle cx={x} cy={coordY(Number(p.ingreso), escala.tope, MARCO)} r="4" className="pn-grafica-punto">
+            <circle
+              cx={x}
+              cy={coordY(Number(p.ingreso), escala.tope, MARCO)}
+              r="4"
+              className="pn-grafica-punto"
+              style={{ '--i': i } as React.CSSProperties}
+            >
               <title>{`${dia} ${d}: ${dinero(Number(p.ingreso))} · ${p.pedidos} pedidos`}</title>
             </circle>
             <text x={x} y={MARCO.alto - 6} textAnchor="middle" className="pn-grafica-eje">
