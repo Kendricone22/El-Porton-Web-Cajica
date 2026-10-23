@@ -14,6 +14,9 @@
   --pn-tenue: #a1a1aa;
   --pn-radio: 14px;
   min-height: 100vh;
+  /* Fondo liso, como el prototipo: un gris casi negro para el contenido
+     y el lateral un punto más oscuro, para que se separen sin líneas. */
+  background: #0d0d0f;
 }
 
 /* ---------- Menú lateral ---------- */
@@ -26,7 +29,7 @@
   flex-direction: column;
   gap: 1rem;
   padding: 1.3rem 0.9rem 1rem;
-  background: #0f0f11;
+  background: #09090a;
   border-right: 1px solid var(--pn-borde);
   overflow-y: auto;
 }

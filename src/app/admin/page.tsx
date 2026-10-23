@@ -14,6 +14,8 @@
  * Rediseño 2026-10 (prototipo del cliente): menú lateral + cabecera +
  * inicio con resumen. El menú lateral muestra SOLO secciones que
  * funcionan de verdad (decisión del cliente): nada de botones vacíos.
+ * Fondo liso como el prototipo (el cliente pidió quitar los puntos
+ * interactivos que había antes).
  * ============================================================= */
 
 import { useEffect, useState } from 'react';
@@ -28,7 +30,6 @@ import Visitas from '@/componentes/admin/Visitas';
 import Menu from '@/componentes/admin/Menu';
 import Resumen, { type Seccion } from '@/componentes/admin/Resumen';
 import ModalSeguridad from '@/componentes/admin/ModalSeguridad';
-import FondoAdmin from '@/componentes/admin/FondoAdmin';
 import { Icono, type NombreIcono } from '@/componentes/Iconos';
 
 const TITULOS: Record<Seccion, { titulo: string; sub: string }> = {
@@ -86,12 +87,9 @@ export default function PanelAdmin() {
     };
   }, [estado, recargarToken, contadorToken]);
 
-  /* El fondo va en TODAS las pantallas, incluida la de acceso: en v1 el
-     canvas está fuera de las vistas y se ve siempre. */
   if (estado === 'cargando') {
     return (
       <>
-        <FondoAdmin />
         <div id="login-view" className="admin-login">
           <p className="loading">Cargando…</p>
         </div>
@@ -102,7 +100,6 @@ export default function PanelAdmin() {
   if (estado === 'fuera') {
     return (
       <>
-        <FondoAdmin />
         <Login alEntrar={revisar} avisoPrevio={error} />
       </>
     );
@@ -111,7 +108,6 @@ export default function PanelAdmin() {
   if (estado === 'mfa' && factorId) {
     return (
       <>
-        <FondoAdmin />
         <RetoMFA factorId={factorId} alVerificar={revisar} alCancelar={salir} />
       </>
     );
@@ -127,14 +123,8 @@ export default function PanelAdmin() {
   const tienda = estadoEn();
   const { titulo, sub } = TITULOS[seccion];
 
-  /* ⚠️ EL LIENZO VA FUERA DE `#dash-view`, COMO HERMANO: un elemento
-     POSICIONADO con `z-index: 0` se pinta por encima de los que no lo
-     están, aunque el número sea menor. Como hermanos sí compiten de
-     verdad: lienzo en 0, vista en 1. */
   return (
     <>
-      <FondoAdmin />
-
       <div id="dash-view" className="pn">
         {/* ---------- menú lateral ---------- */}
         <aside className={`pn-lateral${lateralAbierto ? ' is-abierto' : ''}`} aria-label="Menú del panel">
