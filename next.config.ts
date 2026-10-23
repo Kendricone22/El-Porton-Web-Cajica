@@ -34,6 +34,10 @@ export const CABECERAS_SEGURIDAD = [
 ] as const;
 
 const nextConfig: NextConfig = {
+  /* Oculta la "N" de Next.js que sale abajo a la izquierda en modo
+     desarrollo (en producción nunca aparece). Los errores de compilación
+     se siguen mostrando igual. */
+  devIndicators: false,
   async headers() {
     return [{ source: "/:path*", headers: [...CABECERAS_SEGURIDAD] }];
   },
