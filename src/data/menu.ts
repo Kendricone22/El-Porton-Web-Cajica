@@ -410,7 +410,7 @@ const MENU = [
   { id:"b-gaseosa", cat:"bebidas", combo:false, emoji:"🥤",
     name:"Gaseosa Coca-Cola", desc:"Elige tamaño y sabor.",
     /* El sabor no cambia el precio: va como `choices` (mismos que en el combo). */
-    choices:[{ title:"🥤 Sabor", options:["Coca-Cola","Coca-Cola Zero","Quatro","Sprite","Ginger","Cola Román"] }],
+    choices:[{ title:"🥤 Sabor", options:["Coca-Cola","Coca-Cola Zero","Quatro","Sprite","Ginger","Kola Román"] }],
     options:[{label:"350ml",price:3700},{label:"400ml",price:4000},{label:"500ml",price:5000},{label:"Lata",price:4500},{label:"1.5 Lt",price:8000}] },
   { id:"b-bretana", cat:"bebidas", combo:false, emoji:"💧",
     name:"Bretaña", desc:"Botella.",
@@ -468,7 +468,7 @@ const MENU = [
 /* ============================================================= */
 const COMBO_PRICE = 9000;
 // El combo (solo hamburguesas/perros) incluye papas a la francesa + 1 bebida 400ml:
-const COMBO_DRINKS = ["Coca-Cola", "Coca-Cola Zero", "Quatro", "Sprite", "Ginger", "Cola Román", "Fuze Té", "Agua", "Agua con gas"];
+const COMBO_DRINKS = ["Coca-Cola", "Coca-Cola Zero", "Quatro", "Sprite", "Ginger", "Kola Román", "Fuze Té", "Agua", "Agua con gas"];
 
 // Adiciones premium con su precio y a qué categorías aplican (matriz del cliente).
 // (Infantil y bebidas no llevan adiciones.)

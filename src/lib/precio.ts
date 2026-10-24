@@ -25,6 +25,11 @@ import type { ProductoMenu } from '@/types/menu';
 
 /** Topes para que un pedido absurdo no llegue nunca a la base de datos. */
 export const MAX_LINEAS = 40;
+
+/* Bebidas que cambiaron de nombre: un cliente puede tener todavía el
+   nombre viejo guardado en su carrito. Se acepta y se guarda con el
+   nombre nuevo, en vez de rechazarle el pedido. */
+const BEBIDAS_RENOMBRADAS: Record<string, string> = { 'Cola Román': 'Kola Román' };
 export const MAX_QTY = 30;
 
 export type LineaValidada = {
@@ -110,10 +115,11 @@ export function validarPedido(items: unknown, menu: ProductoMenu[]): Resultado {
     let drink: string | null = null;
     if (combo) {
       if (!esTexto(linea.drink)) return fallo(`el combo de "${item.name}" no trae bebida.`);
-      if (!COMBO_DRINKS.includes(linea.drink)) {
+      const pedida = BEBIDAS_RENOMBRADAS[linea.drink] ?? linea.drink;
+      if (!COMBO_DRINKS.includes(pedida)) {
         return fallo(`la bebida "${linea.drink}" no es una de las del combo.`);
       }
-      drink = linea.drink;
+      drink = pedida;
     }
 
     /* --- adiciones ---

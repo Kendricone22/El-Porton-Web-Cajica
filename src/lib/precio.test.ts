@@ -75,6 +75,12 @@ describe('combo', () => {
     }
     expect(uno({ id: p.id, qty: 1, combo: true, drink: 'Aguardiente' }).ok).toBe(false);
   });
+
+  it('acepta el nombre viejo "Cola Román" (carritos guardados) y lo guarda como "Kola Román"', () => {
+    const r = uno({ id: conCombo[0].id, qty: 1, combo: true, drink: "Cola Román" });
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.lineas[0].drink).toBe('Kola Román');
+  });
 });
 
 /* ------------------------------------------------------------------ */
