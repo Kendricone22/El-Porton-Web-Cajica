@@ -194,6 +194,27 @@ const VARIOS = {
     </>
   ),
   hamburguesaMenu: <path d="M4 7h16M4 12h16M4 17h16" />,
+  cuadricula: (
+    <>
+      <rect x="4" y="4" width="7" height="7" rx="1.5" />
+      <rect x="13" y="4" width="7" height="7" rx="1.5" />
+      <rect x="4" y="13" width="7" height="7" rx="1.5" />
+      <rect x="13" y="13" width="7" height="7" rx="1.5" />
+    </>
+  ),
+  chevron: <path d="m6 9 6 6 6-6" />,
+  subir: (
+    <>
+      <path d="M12 15V4M7.5 8.5 12 4l4.5 4.5" />
+      <path d="M4.5 15v3.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5V15" />
+    </>
+  ),
+  etiqueta: (
+    <>
+      <path d="M3.5 12.2V4.5a1 1 0 0 1 1-1h7.7l8.3 8.3a1.4 1.4 0 0 1 0 2l-6.6 6.6a1.4 1.4 0 0 1-2 0L3.5 12.2z" />
+      <circle cx="8" cy="8" r="1.4" />
+    </>
+  ),
   recargar: (
     <>
       <path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3" />

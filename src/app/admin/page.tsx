@@ -28,6 +28,7 @@ import Pedidos from '@/componentes/admin/Pedidos';
 import Analitica from '@/componentes/admin/Analitica';
 import Visitas from '@/componentes/admin/Visitas';
 import Origenes from '@/componentes/admin/Origenes';
+import PreciosPos from '@/componentes/admin/PreciosPos';
 import Menu from '@/componentes/admin/Menu';
 import Resumen, { type Seccion } from '@/componentes/admin/Resumen';
 import ModalSeguridad from '@/componentes/admin/ModalSeguridad';
@@ -37,6 +38,7 @@ const TITULOS: Record<Seccion, { titulo: string; sub: string }> = {
   inicio: { titulo: 'Inicio', sub: 'Resumen general de tu negocio' },
   pedidos: { titulo: 'Pedidos', sub: 'Cambia el estado de cada pedido con un toque' },
   menu: { titulo: 'Menú', sub: 'Precios, fotos, descripciones y platos agotados' },
+  precios: { titulo: 'Precios POS', sub: 'Ajusta los precios de la carta con la plantilla de VectorPOS' },
   ventas: { titulo: 'Ventas', sub: 'Ingresos, productos más vendidos y exportación' },
   visitas: { titulo: 'Visitas', sub: 'Cuántas personas entran a la web' },
 };
@@ -48,6 +50,7 @@ const GRUPOS: { titulo?: string; items: { id: Seccion; texto: string; icono: Nom
     items: [
       { id: 'pedidos', texto: 'Pedidos', icono: 'pedidos' },
       { id: 'menu', texto: 'Menú', icono: 'carta' },
+      { id: 'precios', texto: 'Precios POS', icono: 'etiqueta' },
     ],
   },
   {
@@ -248,6 +251,7 @@ export default function PanelAdmin() {
               <Pedidos recargarToken={recargarToken} alCambiar={() => setContadorToken((n) => n + 1)} />
             )}
             {seccion === 'menu' && <Menu recargarToken={recargarToken} iniciarCreando={creandoProducto} />}
+            {seccion === 'precios' && <PreciosPos recargarToken={recargarToken} />}
             {seccion === 'ventas' && <Analitica recargarToken={recargarToken} incluirVisitas={false} />}
             {seccion === 'visitas' && (
               <>

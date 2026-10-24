@@ -24,6 +24,27 @@ import {
   type FilaMenu,
 } from '@/lib/menu-admin';
 import ModalMenu from './ModalMenu';
+import { Icono } from '../Iconos';
+
+type Vista = 'lista' | 'iconos';
+const CLAVE_VISTA = 'porton_panel_menu_vista';
+const CLAVE_PLEGADAS = 'porton_panel_menu_plegadas';
+
+function leerPref<T>(clave: string, porDefecto: T): T {
+  try {
+    const v = localStorage.getItem(clave);
+    return v ? (JSON.parse(v) as T) : porDefecto;
+  } catch {
+    return porDefecto;
+  }
+}
+function guardarPref(clave: string, valor: unknown) {
+  try {
+    localStorage.setItem(clave, JSON.stringify(valor));
+  } catch {
+    /* sin almacenamiento: la preferencia dura solo esta sesión */
+  }
+}
 
 export default function Menu({
   recargarToken,
@@ -41,6 +62,22 @@ export default function Menu({
   const [importando, setImportando] = useState(false);
   /** null = cerrado · 'nuevo' = alta · FilaMenu = edición. */
   const [editando, setEditando] = useState<FilaMenu | 'nuevo' | null>(iniciarCreando ? 'nuevo' : null);
+  /* Preferencias de vista: se recuerdan en este navegador. El panel solo
+     se pinta en el cliente (detrás del inicio de sesión), así que leer
+     localStorage aquí no provoca diferencias con el servidor. */
+  const [vista, setVista] = useState<Vista>(() => leerPref<Vista>(CLAVE_VISTA, 'lista'));
+  const [plegadas, setPlegadas] = useState<string[]>(() => leerPref<string[]>(CLAVE_PLEGADAS, []));
+
+  function cambiarVista(v: Vista) {
+    setVista(v);
+    guardarPref(CLAVE_VISTA, v);
+  }
+  function fijarPlegadas(cats: string[]) {
+    setPlegadas(cats);
+    guardarPref(CLAVE_PLEGADAS, cats);
+  }
+  const alternarCategoria = (cat: string) =>
+    fijarPlegadas(plegadas.includes(cat) ? plegadas.filter((c) => c !== cat) : [...plegadas, cat]);
 
   const cargar = useCallback(async () => {
     setCargando(true);
@@ -167,22 +204,68 @@ export default function Menu({
 
   return (
     <>
-      <div className="menu-toolbar">
+      <div className="menu-toolbar pn-menu-barra">
         <span className="menu-count">{filas.length} productos en el menú</span>
-        <button type="button" className="btn-primary mi-add" onClick={() => setEditando('nuevo')}>
-          ➕ Agregar producto
-        </button>
+
+        <div className="pn-menu-controles">
+          <button
+            type="button"
+            className="pn-enlace"
+            onClick={() => fijarPlegadas(plegadas.length >= grupos.length ? [] : grupos.map((g) => g.cat))}
+          >
+            {plegadas.length >= grupos.length ? 'Desplegar todo' : 'Plegar todo'}
+          </button>
+
+          <div className="pn-segmento" role="group" aria-label="Vista del menú">
+            <button
+              type="button"
+              className={vista === 'lista' ? 'is-activo' : ''}
+              aria-pressed={vista === 'lista'}
+              onClick={() => cambiarVista('lista')}
+              title="Lista"
+            >
+              <Icono nombre="hamburguesaMenu" size={16} /> Lista
+            </button>
+            <button
+              type="button"
+              className={vista === 'iconos' ? 'is-activo' : ''}
+              aria-pressed={vista === 'iconos'}
+              onClick={() => cambiarVista('iconos')}
+              title="Iconos medianos"
+            >
+              <Icono nombre="cuadricula" size={16} /> Iconos
+            </button>
+          </div>
+
+          <button type="button" className="btn-primary mi-add" onClick={() => setEditando('nuevo')}>
+            ➕ Agregar producto
+          </button>
+        </div>
       </div>
 
       {aviso && <p className="login-error">{aviso}</p>}
 
-      {grupos.map((g) => (
-        <div className="menu-cat-group" key={g.cat}>
+      {grupos.map((g) => {
+        const plegada = plegadas.includes(g.cat);
+        const agotados = g.filas.filter((f) => !f.available).length;
+        return (
+        <div className={`menu-cat-group pn-cat${plegada ? ' is-plegada' : ''}`} key={g.cat}>
           <h3 className="menu-cat-title">
-            {emojiCategoria(g.cat, CATEGORIES)} {etiquetaCategoria(g.cat, CATEGORIES)}{' '}
-            <span>({g.filas.length})</span>
+            <button
+              type="button"
+              className="pn-cat-boton"
+              aria-expanded={!plegada}
+              onClick={() => alternarCategoria(g.cat)}
+            >
+              <Icono nombre="chevron" size={16} className="pn-cat-flecha" />
+              {emojiCategoria(g.cat, CATEGORIES)} {etiquetaCategoria(g.cat, CATEGORIES)}{' '}
+              <span>({g.filas.length})</span>
+              {agotados > 0 && <span className="out-pill">{agotados} agotado{agotados > 1 ? 's' : ''}</span>}
+            </button>
           </h3>
 
+          {!plegada && (
+          <div className={vista === 'iconos' ? 'pn-menu-rejilla' : 'pn-menu-lista'}>
           {g.filas.map((f) => {
             const d = f.data ?? {};
             return (
@@ -217,8 +300,11 @@ export default function Menu({
               </div>
             );
           })}
+          </div>
+          )}
         </div>
-      ))}
+        );
+      })}
 
       {editando && (
         <ModalMenu
