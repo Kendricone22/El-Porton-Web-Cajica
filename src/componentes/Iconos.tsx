@@ -203,6 +203,12 @@ const VARIOS = {
     </>
   ),
   chevron: <path d="m6 9 6 6 6-6" />,
+  tabla: (
+    <>
+      <rect x="3.5" y="4.5" width="17" height="15" rx="2" />
+      <path d="M3.5 9.5h17M3.5 14.5h17M9.5 9.5v10" />
+    </>
+  ),
   subir: (
     <>
       <path d="M12 15V4M7.5 8.5 12 4l4.5 4.5" />

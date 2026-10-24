@@ -25,8 +25,12 @@ import {
 } from '@/lib/menu-admin';
 import ModalMenu from './ModalMenu';
 import { Icono } from '../Iconos';
+import TablaMenu from './TablaMenu';
+import { crearXlsx } from '@/lib/xlsx-escribir';
+import { filasParaExportar, nombreArchivo } from '@/lib/exportar-menu';
+import { MAPEO_POS } from '@/data/mapeo-pos';
 
-type Vista = 'lista' | 'iconos';
+type Vista = 'lista' | 'iconos' | 'tabla';
 const CLAVE_VISTA = 'porton_panel_menu_vista';
 const CLAVE_PLEGADAS = 'porton_panel_menu_plegadas';
 
@@ -44,6 +48,22 @@ function guardarPref(clave: string, valor: unknown) {
   } catch {
     /* sin almacenamiento: la preferencia dura solo esta sesión */
   }
+}
+
+/** Descarga el menú guardado como Excel (formato de la plantilla de VectorPOS). */
+function exportarExcel(filas: FilaMenu[]) {
+  const tabla = filasParaExportar(filas, MAPEO_POS, CATEGORIES.map((c) => c.key));
+  const bytes = crearXlsx(tabla, { anchos: [12, 34, 10, 18, 10, 60] });
+  const url = URL.createObjectURL(
+    new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
+  );
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = nombreArchivo();
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 export default function Menu({
@@ -208,13 +228,15 @@ export default function Menu({
         <span className="menu-count">{filas.length} productos en el menú</span>
 
         <div className="pn-menu-controles">
-          <button
-            type="button"
-            className="pn-enlace"
-            onClick={() => fijarPlegadas(plegadas.length >= grupos.length ? [] : grupos.map((g) => g.cat))}
-          >
-            {plegadas.length >= grupos.length ? 'Desplegar todo' : 'Plegar todo'}
-          </button>
+          {vista !== 'tabla' && (
+            <button
+              type="button"
+              className="pn-enlace"
+              onClick={() => fijarPlegadas(plegadas.length >= grupos.length ? [] : grupos.map((g) => g.cat))}
+            >
+              {plegadas.length >= grupos.length ? 'Desplegar todo' : 'Plegar todo'}
+            </button>
+          )}
 
           <div className="pn-segmento" role="group" aria-label="Vista del menú">
             <button
@@ -235,7 +257,25 @@ export default function Menu({
             >
               <Icono nombre="cuadricula" size={16} /> Iconos
             </button>
+            <button
+              type="button"
+              className={vista === 'tabla' ? 'is-activo' : ''}
+              aria-pressed={vista === 'tabla'}
+              onClick={() => cambiarVista('tabla')}
+              title="Tabla editable, como en Excel"
+            >
+              <Icono nombre="tabla" size={16} /> Tabla
+            </button>
           </div>
+
+          <button
+            type="button"
+            className="mi-btn pn-exportar"
+            title="Descarga el menú en Excel, con las mismas columnas que la plantilla de VectorPOS"
+            onClick={() => exportarExcel(filas)}
+          >
+            <Icono nombre="documento" size={15} /> Exportar Excel
+          </button>
 
           <button type="button" className="btn-primary mi-add" onClick={() => setEditando('nuevo')}>
             ➕ Agregar producto
@@ -245,7 +285,16 @@ export default function Menu({
 
       {aviso && <p className="login-error">{aviso}</p>}
 
-      {grupos.map((g) => {
+      {vista === 'tabla' && (
+        <TablaMenu
+          filas={filas}
+          alGuardar={(actualizadas) =>
+            setFilas((fs) => (fs ?? []).map((x) => actualizadas.find((a) => a.id === x.id) ?? x))
+          }
+        />
+      )}
+
+      {vista !== 'tabla' && grupos.map((g) => {
         const plegada = plegadas.includes(g.cat);
         const agotados = g.filas.filter((f) => !f.available).length;
         return (
