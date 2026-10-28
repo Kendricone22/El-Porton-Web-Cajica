@@ -1,3 +1,4 @@
+import type { Viewport } from 'next';
 import { CATEGORIES } from '@/data/menu';
 import { obtenerMenu } from '@/lib/menu-servidor';
 import Navbar from '@/componentes/Navbar';
@@ -27,6 +28,16 @@ import { Contacto, LlamadoPedido, Nosotros, PieDePagina, Testimonios } from '@/c
  * `.page-dark` envuelve nosotros/contacto/llamado: es un fondo negro
  * opaco que tapa el lienzo de partículas de ahí hacia abajo.
  * ============================================================= */
+
+/* Celular: la página abre al 85%, como bajar el zoom de la pestaña en el
+ * navegador (pedido del cliente: "se ve muy compacto"). El diseño no
+ * cambia, solo se ve todo más pequeño y cabe más en pantalla. En
+ * computador los navegadores ignoran esto. El panel (/admin) sigue al 100%. */
+export const viewport: Viewport = {
+  themeColor: '#0B0B0B',
+  width: 'device-width',
+  initialScale: 0.85,
+};
 
 export default async function Portada() {
   const { menu } = await obtenerMenu();
