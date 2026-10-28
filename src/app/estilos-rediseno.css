@@ -394,3 +394,31 @@
 
 /* ---------- Fondo un poco más oscuro (pedido del cliente) ---------- */
 .page-bg-texture { opacity: 0.09; }
+
+/* =============================================================
+ * CELULAR / PANTALLAS MEDIANAS (pedido del cliente, 2026-10-28)
+ * - Los 3 botones del hero ($, Ordenar Ahora, Ver favoritos) siempre
+ *   en una sola fila, nunca uno encima de otro.
+ * - La carta de a 3 platos por fila (antes 2) hasta llegar a las
+ *   4 columnas del computador.
+ * ============================================================= */
+@media (max-width: 767.98px) {
+  .hero-actions { flex-wrap: nowrap; gap: 0.5rem; }
+  .hero-actions > * { flex: 0 0 auto; white-space: nowrap; }
+  .hero-price-badge { font-size: clamp(0.78rem, 3vw, 1.1rem); padding: 0.6em 0.75em; }
+  .hero-order-btn { font-size: clamp(0.78rem, 3vw, 1rem); padding: 0.7em 0.95em; gap: 0.4em; }
+  .rd-hero-ver { font-size: clamp(0.78rem, 3vw, 0.92rem); padding: 0.7em 0.9em; }
+}
+
+@media (min-width: 420px) and (max-width: 899.98px) {
+  .catalogo-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
+}
+@media (min-width: 560px) and (max-width: 899.98px) {
+  .catalogo-grid { gap: 1rem; }
+}
+/* Tarjetas angostas (3 columnas en celular): precio arriba y botón a lo ancho. */
+@media (min-width: 420px) and (max-width: 559.98px) {
+  .catalogo-grid .cat-card-body { padding: 0.65rem 0.7rem 0.75rem; }
+  .catalogo-grid .cat-card-foot { flex-direction: column; align-items: stretch; gap: 0.45rem; }
+  .catalogo-grid .cat-card-btn { justify-content: center; }
+}
