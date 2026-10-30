@@ -20,9 +20,8 @@ describe('robots.txt', () => {
 describe('sitemap.xml', () => {
   const s = sitemap();
 
-  it('lista la portada con la dirección absoluta del dominio configurado', () => {
-    expect(s).toHaveLength(1);
-    expect(s[0].url).toBe(`${SITIO}/`);
+  it('lista la portada y /legal con la dirección absoluta del dominio configurado', () => {
+    expect(s.map((e) => e.url)).toEqual([`${SITIO}/`, `${SITIO}/legal`]);
   });
 
   it('no expone el panel', () => {

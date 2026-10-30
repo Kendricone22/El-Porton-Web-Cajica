@@ -5,19 +5,22 @@ import Link from 'next/link';
  * PÁGINA LEGAL: Términos y Condiciones + Política de Datos
  *
  * Portada de docs/legal.html del sitio v1 (mismas clases legal-*,
- * que ya viven en estilos-v1.css). Los campos `legal-fill` son los
- * datos que deben dar los dueños (razón social, NIT y correo PQR);
- * se ven resaltados hasta que se completen.
+ * que ya viven en estilos-v1.css). Los datos del responsable son
+ * los que dieron los dueños, escritos tal cual.
  * ============================================================= */
 
 export const metadata: Metadata = {
   title: 'Términos y Política de Datos — El Portón Cajicá',
   description: 'Términos y Condiciones y Política de Tratamiento de Datos Personales de El Portón Cajicá (Ley 1581 de 2012).',
   alternates: { canonical: '/legal' },
-  robots: { index: false, follow: true },
 };
 
-const Falta = ({ children }: { children: string }) => <span className="legal-fill">[COMPLETAR: {children}]</span>;
+const RAZON_SOCIAL = 'Comidas Rapidas El Porton';
+const RESPONSABLE = 'Felipe Andres Reyes Lombo';
+const NIT = '107010984-0';
+const CORREO = 'elportoncajica@gmail.com';
+
+const Correo = () => <a href={`mailto:${CORREO}`}>{CORREO}</a>;
 
 export default function Legal() {
   return (
@@ -36,11 +39,6 @@ export default function Legal() {
         <h1 className="legal-h1">Términos y Política de Datos</h1>
         <p className="legal-updated">Última actualización: 30 de octubre de 2026</p>
 
-        <div className="legal-note">
-          ⚠️ <strong>Documento en revisión.</strong> Los campos resaltados en amarillo (razón social, NIT y correo de
-          contacto) se completarán con los datos legales del negocio.
-        </div>
-
         <div className="legal-toc">
           <a href="#terminos">Términos y Condiciones</a>
           <a href="#datos">Política de Tratamiento de Datos</a>
@@ -57,8 +55,8 @@ export default function Legal() {
 
           <h3 className="legal-h3">1. Quiénes somos</h3>
           <p>
-            Este sitio es operado por <Falta>Razón social / nombre del responsable</Falta>, identificado con{' '}
-            <Falta>NIT o documento</Falta>, con domicilio en Calle 11 A Sur #10-75, Camino entrada Fagua, sector Canelón,
+            Este sitio es operado por <strong>{RAZON_SOCIAL}</strong> (responsable: {RESPONSABLE}), identificado con
+            NIT {NIT}, con domicilio en Calle 11 A Sur #10-75, Camino entrada Fagua, sector Canelón,
             Cajicá, Cundinamarca, Colombia. Canal de contacto: WhatsApp{' '}
             <a href="https://wa.me/573138214752" target="_blank" rel="noopener">
               +57 313 821 4752
@@ -133,17 +131,20 @@ export default function Legal() {
           <h3 className="legal-h3">1. Responsable del tratamiento</h3>
           <ul>
             <li>
-              <strong>Responsable:</strong> <Falta>Razón social / nombre del responsable</Falta>
+              <strong>Razón social:</strong> {RAZON_SOCIAL}
             </li>
             <li>
-              <strong>NIT / documento:</strong> <Falta>NIT o documento</Falta>
+              <strong>Responsable:</strong> {RESPONSABLE}
+            </li>
+            <li>
+              <strong>NIT:</strong> {NIT}
             </li>
             <li>
               <strong>Domicilio:</strong> Calle 11 A Sur #10-75, Camino entrada Fagua, sector Canelón, Cajicá,
               Cundinamarca.
             </li>
             <li>
-              <strong>Correo para asuntos de datos:</strong> <Falta>correo@dominio</Falta>
+              <strong>Correo para asuntos de datos:</strong> <Correo />
             </li>
             <li>
               <strong>WhatsApp:</strong> +57 313 821 4752
@@ -188,7 +189,7 @@ export default function Legal() {
 
           <h3 className="legal-h3">6. Cómo ejercer tus derechos</h3>
           <p>
-            Puedes ejercer estos derechos escribiendo al correo <Falta>correo@dominio</Falta> o por WhatsApp al +57 313
+            Puedes ejercer estos derechos escribiendo al correo <Correo /> o por WhatsApp al +57 313
             821 4752. Las consultas se atienden en un máximo de diez (10) días hábiles y los reclamos en un máximo de
             quince (15) días hábiles, conforme a la ley.
           </p>
