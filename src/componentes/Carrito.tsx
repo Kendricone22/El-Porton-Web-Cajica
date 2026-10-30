@@ -319,7 +319,10 @@ export default function Carrito() {
                     Autorizo a <strong>El Portón Cajicá</strong> a tratar mis datos personales (nombre, teléfono y
                     dirección) con la única finalidad de gestionar, entregar y hacer seguimiento a este pedido,
                     conforme a la Ley 1581 de 2012. Puedo pedir su consulta, actualización o supresión en cualquier
-                    momento por WhatsApp.
+                    momento por WhatsApp.{' '}
+                    <a href="/legal#datos" target="_blank" rel="noopener">
+                      Ver política de datos
+                    </a>
                   </span>
                 </label>
 

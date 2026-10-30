@@ -441,7 +441,9 @@ export function PieDePagina() {
         </div>
       </div>
 
-      <p className="site-footer-copy rd-pie-copy">© {anio} El Portón Cajicá. Hecho con 🔥 y mucho sabor.</p>
+      <p className="site-footer-copy rd-pie-copy">
+        © {anio} El Portón Cajicá. Hecho con 🔥 y mucho sabor. · <a href="/legal">Términos y política de datos</a>
+      </p>
     </footer>
   );
 }
