@@ -21,6 +21,7 @@ import type { Categoria, CategoriaId, ProductoMenu } from '@/types/menu';
 import { categoriasConProductos } from '@/lib/catalogo';
 import { CATEGORIA_COMBO } from '@/data/portada';
 import Carrito from './Carrito';
+import BotonPreguntar from './BotonPreguntar';
 import Catalogo from './Catalogo';
 import ModalProducto from './ModalProducto';
 import Favoritos from './Favoritos';
@@ -69,6 +70,7 @@ export default function Tienda({
 
       <ModalProducto item={abierto} onCerrar={() => setAbiertoId(null)} />
       <Carrito />
+      <BotonPreguntar />
     </>
   );
 }

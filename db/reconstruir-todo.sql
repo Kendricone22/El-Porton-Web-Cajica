@@ -38,7 +38,7 @@ create table if not exists public.orders (
 create table if not exists public.events (
   id          bigint generated always as identity primary key,
   created_at  timestamptz not null default now(),
-  type        text not null,   -- add_to_cart | checkout_opened | order_sent
+  type        text not null,   -- add_to_cart | checkout_opened | order_sent | whatsapp_click
   meta        jsonb
 );
 

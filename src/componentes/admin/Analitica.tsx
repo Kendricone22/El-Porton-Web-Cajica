@@ -40,6 +40,7 @@ const PASOS = [
   { tipo: 'add_to_cart', etiqueta: 'Agregó al carrito' },
   { tipo: 'checkout_opened', etiqueta: 'Abrió el carrito' },
   { tipo: 'order_sent', etiqueta: 'Envió el pedido' },
+  { tipo: 'whatsapp_click', etiqueta: 'Preguntó por WhatsApp' },
 ] as const;
 
 const PERIODO_ETIQUETA: Record<Granularidad, string> = {

@@ -86,7 +86,7 @@ export function registrarVisita(): void {
   });
 }
 
-export type TipoEvento = 'add_to_cart' | 'checkout_opened' | 'order_sent';
+export type TipoEvento = 'add_to_cart' | 'checkout_opened' | 'order_sent' | 'whatsapp_click';
 
 /** Un paso del embudo. También refresca la visita (la actividad la mantiene viva). */
 export function registrarEvento(tipo: TipoEvento, meta?: Record<string, unknown>): void {
