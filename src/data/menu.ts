@@ -513,6 +513,10 @@ const CAT_DESC = {
     { emoji:"🍗", title:"Pollo Apanado",       text:"Pollo cubierto con un apanado crujiente y dorado, frito al punto para lograr una textura crocante por fuera y jugosa por dentro." },
     { emoji:"🍔", title:"Carne 100% Artesanal", text:"Carne de res preparada en nuestro restaurante, elaborada con ingredientes seleccionados y sin procesos industriales para ofrecer un sabor casero, jugoso y auténtico." },
   ],
+  /* Pedido del cliente (2026-10-31): avisar la piña antes de pedir. */
+  perros: [
+    { emoji:"🍍", title:"Todos nuestros perros llevan piña", text:"Si no la quieres, escríbelo en \"Notas especiales\" al agregar tu perro." },
+  ],
 };
 
 

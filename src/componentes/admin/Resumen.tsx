@@ -4,7 +4,8 @@
  * INICIO DEL PANEL (Dashboard)
  *
  * Diseño del prototipo del cliente, con SOLO datos reales:
- *   · 4 indicadores del día con su variación frente a ayer
+ *   · 4 indicadores del día elegido en el calendario (hoy por defecto)
+ *     con su variación frente al día anterior
  *     (la tarjeta de "calificación promedio" del prototipo se quitó:
  *     no hay reseñas en la base).
  *   · ventas de los últimos 7 días, estado de la tienda según el
@@ -15,7 +16,7 @@
  * muestran igual.
  * ============================================================= */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { supabaseNavegador } from '@/lib/supabase-navegador';
 import { MENU } from '@/data/menu';
@@ -23,8 +24,9 @@ import { CONTACTO } from '@/data/portada';
 import { estadoEn } from '@/lib/horario';
 import { dinero, ETIQUETA_ESTADO, type EstadoPedido, type Pedido } from '@/lib/pedidos-admin';
 import { coordX, coordY, escalaY, formatoCorto, marcasY, rutaArea, rutaLinea, type FilaTop, type Marco, type PuntoSerie } from '@/lib/ventas';
-import { clientesUnicos, fechaBogota, haceCuanto, inicioDiaBogota, kpisDeSerie, variacion, type Kpis } from '@/lib/panel';
+import { diaAnterior, fechaBogota, haceCuanto, rangoDia, resumenDia, variacion, type ResumenDia } from '@/lib/panel';
 import ExportarCSV from './ExportarCSV';
+import SelectorDia from './SelectorDia';
 import { Contador, Esqueleto } from './Animaciones';
 import { Icono, type NombreIcono } from '../Iconos';
 
@@ -50,8 +52,12 @@ export default function Resumen({
   nuevoProducto: () => void;
 }) {
   const sb = supabaseNavegador();
+  const hoy = fechaBogota(new Date());
+  /* Día que se está mirando (calendario). Por defecto, hoy. */
+  const [dia, setDia] = useState(hoy);
   const [serie, setSerie] = useState<PuntoSerie[] | null>(null);
-  const [clientes, setClientes] = useState<{ hoy: number; ayer: number } | null>(null);
+  const [kpis, setKpis] = useState<{ dia: ResumenDia; antes: ResumenDia } | null>(null);
+  const [delDia, setDelDia] = useState<Pedido[] | null>(null);
   const [recientes, setRecientes] = useState<Pedido[] | null>(null);
   const [top, setTop] = useState<FilaTop[] | null>(null);
   const [actividad, setActividad] = useState<Actividad[] | null>(null);
@@ -63,11 +69,18 @@ export default function Resumen({
        escribe sobre un componente que ya no está). */
     let vigente = true;
     void (async () => {
-      const desdeAyer = inicioDiaBogota(-1).toISOString();
+      /* Pedidos del día elegido y del anterior (para la comparación). */
+      const desde = rangoDia(diaAnterior(dia)).desde.toISOString();
+      const hasta = rangoDia(dia).hasta.toISOString();
 
       const [rSerie, rDia, rRecientes, rTop, rMenu] = await Promise.all([
         sb.rpc('ventas_serie', { p_gran: 'dia', p_periodos: 7 }),
-        sb.from('orders').select('customer_phone, created_at, status').gte('created_at', desdeAyer),
+        sb
+          .from('orders')
+          .select('*')
+          .gte('created_at', desde)
+          .lt('created_at', hasta)
+          .order('created_at', { ascending: false }),
         sb.from('orders').select('*').order('created_at', { ascending: false }).limit(6),
         sb.rpc('ventas_top', { p_gran: 'dia', p_periodos: 30, p_limite: 5 }),
         sb.from('menu_items').select('id, data, updated_at').order('updated_at', { ascending: false }).limit(4),
@@ -77,12 +90,14 @@ export default function Resumen({
       setAviso(rSerie.error ? 'No se pudieron leer las ventas: ' + rSerie.error.message : null);
       setSerie(rSerie.error ? [] : ((rSerie.data ?? []) as PuntoSerie[]));
 
-      if (!rDia.error) {
-        const filas = rDia.data ?? [];
-        setClientes({
-          hoy: clientesUnicos(filas, fechaBogota(new Date())),
-          ayer: clientesUnicos(filas, fechaBogota(inicioDiaBogota(-1))),
-        });
+      if (rDia.error) {
+        setAviso('No se pudieron leer los pedidos del día: ' + rDia.error.message);
+        setKpis(null);
+        setDelDia([]);
+      } else {
+        const filas = (rDia.data ?? []) as Pedido[];
+        setKpis({ dia: resumenDia(filas, dia), antes: resumenDia(filas, diaAnterior(dia)) });
+        setDelDia(filas.filter((p) => fechaBogota(p.created_at) === dia));
       }
 
       const pedidos = (rRecientes.data ?? []) as Pedido[];
@@ -111,21 +126,27 @@ export default function Resumen({
     return () => {
       vigente = false;
     };
-  }, [sb, recargarToken]);
+  }, [sb, recargarToken, dia]);
 
-  const kpis: Kpis | null = useMemo(() => (serie ? kpisDeSerie(serie) : null), [serie]);
   const tienda = estadoEn();
+  const esHoy = dia === hoy;
+  const contra = esHoy ? 'ayer' : 'el día anterior';
+  const [, mesDia, diaDia] = dia.split('-');
+  /* Hoy: los últimos pedidos (aunque sean de ayer). Otro día: los de ese día. */
+  const lista = esHoy ? recientes : delDia;
 
   return (
     <div className="pn-resumen">
       {aviso && <p className="login-error">{aviso}</p>}
 
+      <SelectorDia dia={dia} onCambiar={setDia} />
+
       {/* ---------- indicadores ---------- */}
       <div className="pn-kpis">
-        <Kpi icono="dinero" tono="rojo" titulo="Ventas del día" valor={kpis?.ventas.hoy} formato={dinero} ayer={kpis?.ventas.ayer} />
-        <Kpi icono="bolsa" tono="rojo" titulo="Pedidos del día" valor={kpis?.pedidos.hoy} ayer={kpis?.pedidos.ayer} />
-        <Kpi icono="usuarios" tono="ambar" titulo="Clientes únicos" valor={clientes?.hoy} ayer={clientes?.ayer} />
-        <Kpi icono="recibo" tono="verde" titulo="Ticket promedio" valor={kpis?.ticket.hoy} formato={dinero} ayer={kpis?.ticket.ayer} />
+        <Kpi icono="dinero" tono="rojo" titulo="Ventas del día" valor={kpis?.dia.ventas} formato={dinero} ayer={kpis?.antes.ventas} contra={contra} />
+        <Kpi icono="bolsa" tono="rojo" titulo="Pedidos del día" valor={kpis?.dia.pedidos} ayer={kpis?.antes.pedidos} contra={contra} />
+        <Kpi icono="usuarios" tono="ambar" titulo="Clientes únicos" valor={kpis?.dia.clientes} ayer={kpis?.antes.clientes} contra={contra} />
+        <Kpi icono="recibo" tono="verde" titulo="Ticket promedio" valor={kpis?.dia.ticket} formato={dinero} ayer={kpis?.antes.ticket} contra={contra} />
       </div>
 
       <div className="pn-fila pn-fila--grafica">
@@ -174,15 +195,15 @@ export default function Resumen({
         {/* ---------- pedidos recientes ---------- */}
         <section className="pn-tarjeta">
           <header className="pn-tarjeta-cab">
-            <h3>Pedidos recientes</h3>
+            <h3>{esHoy ? 'Pedidos recientes' : `Pedidos del ${Number(diaDia)}/${Number(mesDia)}`}</h3>
             <button type="button" className="pn-enlace" onClick={() => ir('pedidos')}>
               Ver todos los pedidos
             </button>
           </header>
-          {!recientes ? (
+          {!lista ? (
             <Esqueleto lineas={4} />
-          ) : !recientes.length ? (
-            <p className="empty-state">Aún no hay pedidos.</p>
+          ) : !lista.length ? (
+            <p className="empty-state">{esHoy ? 'Aún no hay pedidos.' : 'No hubo pedidos ese día.'}</p>
           ) : (
             <div className="pn-tabla-wrap">
               <table className="pn-tabla">
@@ -196,7 +217,7 @@ export default function Resumen({
                   </tr>
                 </thead>
                 <tbody>
-                  {recientes.map((p, i) => (
+                  {lista.map((p, i) => (
                     <tr key={p.id} style={{ '--i': i } as React.CSSProperties}>
                       <td>{p.customer_name}</td>
                       <td className="pn-tenue">
@@ -321,6 +342,7 @@ function Kpi({
   valor,
   formato,
   ayer,
+  contra = 'ayer',
 }: {
   icono: NombreIcono;
   tono: 'rojo' | 'ambar' | 'verde';
@@ -328,7 +350,10 @@ function Kpi({
   /** `undefined` mientras carga: se muestra un esqueleto. */
   valor?: number;
   formato?: (n: number) => string;
+  /** Valor del día con que se compara (ayer, o el anterior al elegido). */
   ayer?: number;
+  /** Cómo se nombra ese día en el texto: "ayer" o "el día anterior". */
+  contra?: string;
 }) {
   const hoy = valor;
   const v = hoy === undefined || ayer === undefined ? undefined : variacion(hoy, ayer);
@@ -343,7 +368,7 @@ function Kpi({
           {valor === undefined ? <Esqueleto lineas={1} alto="1.6rem" /> : <Contador valor={valor} formato={formato} />}
         </p>
         <p className={`pn-kpi-var${v === null || v === undefined ? '' : v >= 0 ? ' is-sube' : ' is-baja'}`}>
-          {v === undefined ? ' ' : v === null ? 'Sin datos de ayer' : `${v >= 0 ? '↗' : '↘'} ${Math.abs(v)}% vs ayer`}
+          {v === undefined ? ' ' : v === null ? `Sin datos ${contra.startsWith('el ') ? 'del ' + contra.slice(3) : 'de ' + contra}` : `${v >= 0 ? '↗' : '↘'} ${Math.abs(v)}% vs ${contra}`}
         </p>
       </div>
     </div>

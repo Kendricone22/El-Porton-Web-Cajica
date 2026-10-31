@@ -28,6 +28,8 @@ import {
   type EstadoPedido,
   type Pedido,
 } from '@/lib/pedidos-admin';
+import { fechaLarga, rangoDia } from '@/lib/panel';
+import SelectorDia from './SelectorDia';
 
 const POR_PAGINA = 50;
 
@@ -48,6 +50,8 @@ export default function Pedidos({
   const [error, setError] = useState<string | null>(null);
   const [guardando, setGuardando] = useState<string | null>(null);
   const [filtro, setFiltro] = useState<Filtro>('todos');
+  /* Calendario: "" = todos los días; "AAAA-MM-DD" = solo ese día (Bogotá). */
+  const [dia, setDia] = useState('');
 
   const cargar = useCallback(
     async (desde: number) => {
@@ -56,6 +60,10 @@ export default function Pedidos({
 
       let consulta = sb.from('orders').select('*', { count: 'exact' });
       if (filtro !== 'todos') consulta = consulta.eq('status', filtro);
+      if (dia) {
+        const r = rangoDia(dia);
+        consulta = consulta.gte('created_at', r.desde.toISOString()).lt('created_at', r.hasta.toISOString());
+      }
       const { data, error: err, count } = await consulta
         .order('created_at', { ascending: false })
         .range(desde, desde + POR_PAGINA - 1);
@@ -68,7 +76,7 @@ export default function Pedidos({
       setTotal(count ?? null);
       setPedidos((prev) => (desde === 0 ? (data as Pedido[]) : [...prev, ...(data as Pedido[])]));
     },
-    [sb, filtro],
+    [sb, filtro, dia],
   );
 
   useEffect(() => {
@@ -97,6 +105,8 @@ export default function Pedidos({
   const hayMas = total !== null && pedidos.length < total;
 
   const chips = (
+    <>
+    <SelectorDia dia={dia} onCambiar={setDia} permitirTodos />
     <div className="pn-chips" role="tablist" aria-label="Filtrar pedidos por estado">
       {(['todos', ...ESTADOS] as Filtro[]).map((f) => (
         <button
@@ -111,6 +121,7 @@ export default function Pedidos({
         </button>
       ))}
     </div>
+    </>
   );
 
   if (cargando) return <>{chips}<p className="loading">Cargando pedidos…</p></>;
@@ -120,7 +131,11 @@ export default function Pedidos({
       <>
         {chips}
         <p className="empty-state">
-          {filtro === 'todos' ? 'Aún no hay pedidos.' : `No hay pedidos en "${ETIQUETA_ESTADO[filtro]}".`}
+          {dia
+            ? `No hay pedidos${filtro === 'todos' ? '' : ` en "${ETIQUETA_ESTADO[filtro]}"`} el ${fechaLarga(dia).toLowerCase()}.`
+            : filtro === 'todos'
+              ? 'Aún no hay pedidos.'
+              : `No hay pedidos en "${ETIQUETA_ESTADO[filtro]}".`}
         </p>
       </>
     );

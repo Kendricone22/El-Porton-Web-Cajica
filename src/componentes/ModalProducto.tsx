@@ -308,7 +308,7 @@ export default function ModalProducto({
               id="modal-notes"
               className="modal-notes"
               rows={2}
-              placeholder="Instrucciones especiales..."
+              placeholder={item?.cat === 'perros' ? 'Ej: sin piña' : 'Instrucciones especiales...'}
               value={sel.notas}
               onChange={(e) => cambiar({ notas: e.target.value })}
             />

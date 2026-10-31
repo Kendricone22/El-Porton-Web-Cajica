@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { clientesUnicos, fechaBogota, haceCuanto, inicioDiaBogota, kpisDeSerie, variacion } from './panel';
+import { clientesUnicos, diaAnterior, fechaBogota, fechaLarga, haceCuanto, inicioDiaBogota, kpisDeSerie, rangoDia, resumenDia, topDelDia, variacion } from './panel';
 
 describe('fechaBogota / inicioDiaBogota', () => {
   it('usa la fecha de Bogotá, no la UTC', () => {
@@ -74,5 +74,46 @@ describe('haceCuanto', () => {
     expect(haceCuanto('2026-10-23T14:59:00Z', ahora)).toBe('Hace 1 minuto');
     expect(haceCuanto('2026-10-23T12:00:00Z', ahora)).toBe('Hace 3 horas');
     expect(haceCuanto('2026-10-21T15:00:00Z', ahora)).toBe('Hace 2 días');
+  });
+});
+
+describe('un día concreto (calendario)', () => {
+  it('rangoDia cubre de 00:00 a 24:00 en Bogotá (05:00 UTC)', () => {
+    const { desde, hasta } = rangoDia('2026-10-23');
+    expect(desde.toISOString()).toBe('2026-10-23T05:00:00.000Z');
+    expect(hasta.toISOString()).toBe('2026-10-24T05:00:00.000Z');
+  });
+
+  it('diaAnterior cruza meses y años', () => {
+    expect(diaAnterior('2026-11-01')).toBe('2026-10-31');
+    expect(diaAnterior('2027-01-01')).toBe('2026-12-31');
+  });
+
+  it('fechaLarga acepta un día "AAAA-MM-DD"', () => {
+    expect(fechaLarga('2026-10-23')).toBe('Viernes, 23 de octubre');
+  });
+
+  const pedidos = [
+    // 23 oct 22:30 en Bogotá = 24 oct 03:30 UTC: cuenta para el 23.
+    { created_at: '2026-10-24T03:30:00Z', status: 'entregado', subtotal: 30000, customer_phone: '3138214752',
+      items: [{ name: 'Perro Clásico', cat: 'perros', qty: 2, unitPrice: 10000 }, { name: 'Gaseosa', qty: 1, unitPrice: 10000 }] },
+    { created_at: '2026-10-23T18:00:00Z', status: 'nuevo', subtotal: 10000, customer_phone: '+57 313 821 4752',
+      items: [{ name: 'Perro Clásico', cat: 'perros', qty: 1, unitPrice: 10000 }] },
+    { created_at: '2026-10-23T19:00:00Z', status: 'cancelado', subtotal: 99000, customer_phone: '3000000000',
+      items: [{ name: 'Pizza', qty: 5, unitPrice: 19800 }] },
+    { created_at: '2026-10-22T19:00:00Z', status: 'entregado', subtotal: 5000, customer_phone: '3001112233', items: [] },
+  ];
+
+  it('resumenDia suma solo ese día y sin cancelados', () => {
+    expect(resumenDia(pedidos, '2026-10-23')).toEqual({ ventas: 40000, pedidos: 2, ticket: 20000, clientes: 1 });
+    expect(resumenDia(pedidos, '2026-10-22')).toEqual({ ventas: 5000, pedidos: 1, ticket: 5000, clientes: 1 });
+    expect(resumenDia(pedidos, '2026-10-21')).toEqual({ ventas: 0, pedidos: 0, ticket: 0, clientes: 0 });
+  });
+
+  it('topDelDia agrupa por producto, ordena por unidades e ignora cancelados', () => {
+    expect(topDelDia(pedidos, '2026-10-23')).toEqual([
+      { producto: 'Perro Clásico', categoria: 'perros', unidades: 3, ingreso: 30000 },
+      { producto: 'Gaseosa', categoria: '', unidades: 1, ingreso: 10000 },
+    ]);
   });
 });

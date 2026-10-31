@@ -345,7 +345,9 @@ export default function Carrito() {
               <span>Total productos</span>
               <span className="cart-total">{fmt(subtotal)}</span>
             </div>
-            <p className="cart-foot-note">El valor del domicilio lo calcula el asesor.</p>
+            <p className="cart-aviso-domicilio">
+              ⚠️ El valor del domicilio <strong>NO está incluido</strong>. Te lo confirma el asesor por WhatsApp.
+            </p>
             {aviso && (
               <p className="cart-aviso" role="alert">
                 ⚠️ {aviso}

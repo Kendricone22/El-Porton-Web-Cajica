@@ -658,3 +658,31 @@
 .pn-tm-guardar .pn-pos-ok, .pn-tm-guardar .login-error { margin: 0 auto 0 0; text-align: left; }
 
 .pn-exportar { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.55rem 0.85rem; }
+
+/* ---------- Calendario: elegir un día (Inicio, Pedidos, Ventas) ---------- */
+.pn-dia { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 1.2rem; }
+.pn-dia-campo {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.6rem 0.45rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid var(--pn-borde);
+  background: var(--pn-panel);
+  color: #d4d4d8;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.pn-dia-campo:focus-within { border-color: var(--rojo); }
+.pn-dia-texto b { color: #fff; font-weight: 600; }
+.pn-dia-campo input[type='date'] {
+  color-scheme: dark;
+  background: transparent;
+  border: 0;
+  color: #a1a1aa;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.pn-dia-campo input[type='date']:focus { outline: none; }

@@ -70,6 +70,60 @@ export function clientesUnicos(pedidos: PedidoMin[], dia: string): number {
   return vistos.size;
 }
 
+/* -------------------------------------------------------------
+ * UN DÍA CONCRETO (el calendario del panel)
+ * ----------------------------------------------------------- */
+
+/** "2026-10-23" → el intervalo [desde, hasta) de ese día en Bogotá. */
+export function rangoDia(dia: string): { desde: Date; hasta: Date } {
+  const [y, m, d] = dia.split('-').map(Number);
+  return {
+    desde: new Date(Date.UTC(y, m - 1, d, DESFASE_HORAS)),
+    hasta: new Date(Date.UTC(y, m - 1, d + 1, DESFASE_HORAS)),
+  };
+}
+
+/** "2026-11-01" → "2026-10-31". */
+export function diaAnterior(dia: string): string {
+  return fechaBogota(new Date(rangoDia(dia).desde.getTime() - 1));
+}
+
+type PedidoDia = PedidoMin & { subtotal: number; items?: { name: string; cat?: string; qty: number; unitPrice?: number }[] | null };
+
+export type ResumenDia = { ventas: number; pedidos: number; ticket: number; clientes: number };
+
+/** Indicadores de un día con el mismo criterio que ventas_serie: los cancelados no cuentan. */
+export function resumenDia(pedidos: PedidoDia[], dia: string): ResumenDia {
+  const validos = pedidos.filter((p) => p.status !== 'cancelado' && fechaBogota(p.created_at) === dia);
+  const ventas = validos.reduce((s, p) => s + Number(p.subtotal || 0), 0);
+  return {
+    ventas,
+    pedidos: validos.length,
+    ticket: validos.length ? Math.round(ventas / validos.length) : 0,
+    clientes: clientesUnicos(pedidos, dia),
+  };
+}
+
+/** Productos más pedidos de un día, igual que ventas_top: unidades × precio unitario guardado. */
+export function topDelDia(
+  pedidos: PedidoDia[],
+  dia: string,
+): { producto: string; categoria: string; unidades: number; ingreso: number }[] {
+  const porNombre = new Map<string, { producto: string; categoria: string; unidades: number; ingreso: number }>();
+  for (const p of pedidos) {
+    if (p.status === 'cancelado' || fechaBogota(p.created_at) !== dia) continue;
+    for (const it of p.items ?? []) {
+      const nombre = it.name || '(sin nombre)';
+      const qty = Number(it.qty) || 1;
+      const fila = porNombre.get(nombre) ?? { producto: nombre, categoria: it.cat ?? '', unidades: 0, ingreso: 0 };
+      fila.unidades += qty;
+      fila.ingreso += qty * (Number(it.unitPrice) || 0);
+      porNombre.set(nombre, fila);
+    }
+  }
+  return [...porNombre.values()].sort((a, b) => b.unidades - a.unidades || b.ingreso - a.ingreso);
+}
+
 /** "Hace 3 minutos", "Hace 2 horas", "Hace 5 días". */
 export function haceCuanto(iso: string, ahora: Date = new Date()): string {
   const seg = Math.max(0, Math.round((ahora.getTime() - new Date(iso).getTime()) / 1000));
@@ -83,7 +137,8 @@ export function haceCuanto(iso: string, ahora: Date = new Date()): string {
 }
 
 /** "jueves, 23 de octubre" (para la cabecera del inicio). */
-export function fechaLarga(ahora: Date = new Date()): string {
+export function fechaLarga(ahora: Date | string = new Date()): string {
+  if (typeof ahora === 'string') ahora = rangoDia(ahora).desde;
   const s = new Intl.DateTimeFormat('es-CO', { timeZone: ZONA, weekday: 'long', day: 'numeric', month: 'long' }).format(ahora);
   return s.charAt(0).toUpperCase() + s.slice(1);
 }

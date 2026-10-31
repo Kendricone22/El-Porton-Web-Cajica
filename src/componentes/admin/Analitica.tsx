@@ -22,7 +22,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { supabaseNavegador } from '@/lib/supabase-navegador';
 import { dinero } from '@/lib/pedidos-admin';
 import type { Granularidad } from '@/lib/ventas';
+import { fechaBogota } from '@/lib/panel';
 import Ventas from './Ventas';
+import VentasDia from './VentasDia';
+import SelectorDia from './SelectorDia';
 import Visitas from './Visitas';
 import ExportarCSV from './ExportarCSV';
 
@@ -61,6 +64,9 @@ export default function Analitica({
 
   const [gran, setGran] = useState<Granularidad>('dia');
   const [tabla, setTabla] = useState(false);
+  /* "Un día": en vez de la serie por periodos, el detalle de un día del calendario. */
+  const [unDia, setUnDia] = useState(false);
+  const [dia, setDia] = useState(() => fechaBogota(new Date()));
 
   const cargar = useCallback(async () => {
     setCargando(true);
@@ -129,18 +135,33 @@ export default function Analitica({
               <button
                 key={g}
                 type="button"
-                className={gran === g ? 'active' : undefined}
-                onClick={() => setGran(g)}
+                className={!unDia && gran === g ? 'active' : undefined}
+                onClick={() => {
+                  setGran(g);
+                  setUnDia(false);
+                }}
               >
                 {PERIODO_ETIQUETA[g]}
               </button>
             ))}
+            <button type="button" className={unDia ? 'active' : undefined} onClick={() => setUnDia(true)}>
+              Un día
+            </button>
           </div>
-          <button type="button" className="vt-link" onClick={() => setTabla((v) => !v)}>
-            {tabla ? 'Ocultar tabla' : 'Ver tabla'}
-          </button>
+          {!unDia && (
+            <button type="button" className="vt-link" onClick={() => setTabla((v) => !v)}>
+              {tabla ? 'Ocultar tabla' : 'Ver tabla'}
+            </button>
+          )}
         </div>
-        <Ventas gran={gran} tabla={tabla} recargarToken={recargarToken} />
+        {unDia ? (
+          <>
+            <SelectorDia dia={dia} onCambiar={setDia} />
+            <VentasDia dia={dia} recargarToken={recargarToken} />
+          </>
+        ) : (
+          <Ventas gran={gran} tabla={tabla} recargarToken={recargarToken} />
+        )}
       </div>
 
       {incluirVisitas && (
