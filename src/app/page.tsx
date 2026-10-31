@@ -11,6 +11,7 @@ import DatosEstructurados from '@/componentes/DatosEstructurados';
 import FondoParticulas from '@/componentes/FondoParticulas';
 import Rastreo from '@/componentes/Rastreo';
 import { AmbienteHalloween } from '@/componentes/DecoracionHalloween';
+import MurcielagosHalloween from '@/componentes/MurcielagosHalloween';
 import { Contacto, LlamadoPedido, Nosotros, PieDePagina, Testimonios } from '@/componentes/Secciones';
 
 /* =============================================================
@@ -56,6 +57,7 @@ export default async function Portada() {
       <Navbar />
       {/* Solo se ve en temporada (lib/temporada.ts): niebla, murciélagos y araña. */}
       <AmbienteHalloween />
+      <MurcielagosHalloween />
       <InsigniaHorario />
 
       <main>

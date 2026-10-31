@@ -343,7 +343,11 @@ function ItemInfo({
 /* ---------- ¿listo para pedir? ---------- */
 export function LlamadoPedido() {
   return (
-    <section className="rd-seccion reveal" aria-labelledby="titulo-llamado">
+    <section className="rd-seccion rd-seccion--llamado reveal" aria-labelledby="titulo-llamado">
+      {/* Solo en Halloween (lib/temporada.ts): una luna que se asoma detrás de la tarjeta. */}
+      <span className="hw-solo hw-luna hw-luna--llamado" aria-hidden="true">
+        <span className="hw-nube" />
+      </span>
       <div className="rd-llamado">
         <Icono nombre="bolsa" className="rd-llamado-icono" size={44} />
         <div className="rd-llamado-texto">

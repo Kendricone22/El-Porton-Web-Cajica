@@ -6,11 +6,14 @@
  * lib/temporada.ts). Así no hay estado ni efectos de React.
  *
  * Dos capas:
- *   - <DecoracionHalloween/> va DENTRO del hero: luna, telarañas,
- *     araña colgando, niebla baja y luz de vela.
+ *   - <DecoracionHalloween/> va DENTRO del hero: telarañas, araña
+ *     colgando, niebla baja y luz de vela. (La luna no va aquí: las
+ *     fotos del carrusel llenan la pantalla y siempre caía sobre la
+ *     comida. Sale detrás de la tarjeta "¿Listo para pedir?".)
  *   - <AmbienteHalloween/> es FIJA sobre toda la página: niebla al
- *     pie de la pantalla, bandada de murciélagos y una araña que
- *     camina. Va por debajo del menú, el carrito y las ventanas.
+ *     pie de la pantalla y una araña que camina. Va por debajo del
+ *     menú, el carrito y las ventanas.
+ *   Los murciélagos van aparte, en <MurcielagosHalloween/>.
  *
  * Todo es decorativo: aria-hidden y sin clics (pointer-events: none).
  * Las animaciones solo mueven transform/opacity, para que vayan
@@ -41,17 +44,11 @@ function AranaSvg() {
 export default function DecoracionHalloween() {
   return (
     <div className="hw-deco" aria-hidden="true">
-      <span className="hw-luna">
-        <span className="hw-nube" />
-      </span>
       <span className="hw-web hw-web--izq" />
       <span className="hw-web hw-web--der" />
       <span className="hw-colgante">
         <AranaSvg />
       </span>
-      <span className="hw-bat hw-bat--1" />
-      <span className="hw-bat hw-bat--2" />
-      <span className="hw-bat hw-bat--3" />
       <span className="hw-niebla hw-niebla--atras" />
       <span className="hw-niebla hw-niebla--frente" />
       <span className="hw-vela" />
@@ -64,12 +61,6 @@ export function AmbienteHalloween() {
     <div className="hw-ambiente" aria-hidden="true">
       <span className="hw-niebla-pie hw-niebla-pie--1" />
       <span className="hw-niebla-pie hw-niebla-pie--2" />
-      <span className="hw-bandada">
-        <span className="hw-bat hw-bat--b1" />
-        <span className="hw-bat hw-bat--b2" />
-        <span className="hw-bat hw-bat--b3" />
-        <span className="hw-bat hw-bat--b4" />
-      </span>
       <span className="hw-caminante">
         <AranaSvg />
       </span>
