@@ -48,7 +48,7 @@ const nextConfig: NextConfig = {
       {
         source: "/:path((?!api/).*)",
         has: [{ type: "host", value: "el-porton-web-cajica.vercel.app" }],
-        destination: "https://elportoncajica.com/:path",
+        destination: "https://www.elportoncajica.com/:path",
         permanent: true,
       },
     ];

@@ -12,7 +12,7 @@
  * y redesplegar. No hay que tocar código.
  * ============================================================= */
 
-export const SITIO_POR_DEFECTO = 'https://elportoncajica.com';
+export const SITIO_POR_DEFECTO = 'https://www.elportoncajica.com';
 
 /**
  * Normaliza lo que haya en la variable: quita espacios y saltos de línea

@@ -21,7 +21,7 @@ const BRAND = {
 /* ============================================================= */
 const BUSINESS = {
   timeZone: "America/Bogota",     /* el estado no depende del reloj del visitante */
-  siteUrl:  "https://elportoncajica.com",
+  siteUrl:  "https://www.elportoncajica.com",
 
   /* Horario de atención. Clave = día de la semana (0 = domingo … 6 = sábado).
      `null` = cerrado ese día. Formato 24 h. */
