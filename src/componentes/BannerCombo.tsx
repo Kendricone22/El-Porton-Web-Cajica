@@ -21,7 +21,7 @@ export default function BannerCombo({ onVer }: { onVer: () => void }) {
     <section className="rd-combo-full reveal" aria-labelledby="titulo-combo">
       <div className="rd-combo-fondo">
         <Image
-          src="/assets/Platos/combo-clasica-doble.jpg"
+          src="/assets/Platos/combo-clasica-doble-botella.jpg"
           alt="Combo: Hamburguesa Clásica Doble con papas a la francesa y Coca-Cola"
           fill
           sizes="(max-width: 767px) 100vw, 60vw"

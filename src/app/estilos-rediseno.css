@@ -204,7 +204,7 @@
 @media (max-width: 767.98px) {
   .rd-combo-full { display: block; min-height: 0; }
   .rd-combo-fondo { position: relative; inset: auto; aspect-ratio: 4 / 3; -webkit-mask-image: none; mask-image: none; }
-  .rd-combo-fondo img { object-position: 95% 50%; }
+  .rd-combo-fondo img { object-position: 100% 50%; }
   .rd-combo-velo {
     top: 0;
     bottom: auto;
