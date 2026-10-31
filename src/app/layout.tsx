@@ -2,9 +2,11 @@ import type { Metadata, Viewport } from 'next';
 import { Bebas_Neue, Inter, Playfair_Display } from 'next/font/google';
 import { ProveedorCarrito } from '@/estado/carrito';
 import { SITIO } from '@/lib/sitio';
+import { SCRIPT_TEMPORADA } from '@/lib/temporada';
 import './globals.css';
 import './estilos-v1.css';
 import './estilos-rediseno.css';
+import './estilos-temporada.css';
 
 /* =============================================================
  * FUENTES
@@ -103,7 +105,13 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
     <html
       lang="es"
       className={`${bebas.variable} ${playfair.variable} ${inter.variable} antialiased`}
+      /* El script de temporada añade data-temporada antes de hidratar. */
+      suppressHydrationWarning
     >
+      <head>
+        {/* Decoración por fecha (Halloween): va antes de pintar para que no parpadee. */}
+        <script dangerouslySetInnerHTML={{ __html: SCRIPT_TEMPORADA }} />
+      </head>
       {/* El proveedor envuelve toda la aplicación: el carrito debe
           sobrevivir a la navegación entre páginas, así que va aquí y
           no dentro de una página concreta. */}

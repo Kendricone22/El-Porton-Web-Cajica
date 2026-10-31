@@ -389,6 +389,7 @@ export function PieDePagina() {
         <div className="rd-pie-marca">
           <Image src="/assets/logo-final.png" alt="El Portón Cajicá" width={150} height={60} className="rd-pie-logo" />
           <p>Comidas Rápidas &amp; Pizzería Artesanal · Cajicá, Cundinamarca.</p>
+          <p className="hw-solo hw-saludo">🎃 ¡Feliz Halloween de parte de todo El Portón!</p>
           <div className="rd-redes">
             <a href={CONTACTO.instagram} target="_blank" rel="noopener" aria-label="Instagram de El Portón">
               <Icono nombre="instagram" size={18} />

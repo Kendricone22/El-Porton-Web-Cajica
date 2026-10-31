@@ -1,0 +1,383 @@
+/* =============================================================
+ * TEMPORADA — Halloween
+ *
+ * Todo cuelga de html[data-temporada="halloween"], que pone el
+ * script del <head> solo en fechas (lib/temporada.ts). Fuera de
+ * fecha nada de esto aplica y la página se ve como siempre.
+ *
+ * Criterio: ambiente de película, no calcomanías. Luz, niebla y
+ * color; los animales van en silueta y con movimiento natural.
+ * Nada tapa botones ni precios y nada recibe clics. Solo se anima
+ * transform/opacity (fluido en celulares de gama baja).
+ * No se apagan con "reducir movimiento": son lentas y decorativas, y
+ * muchos celulares traen esa opción activada sin que el dueño lo sepa.
+ *
+ * Capas (z-index): contenido ≤ 20 · ambiente fijo 30 · botón del
+ * carrito 40 · menú 50 · carrito y ventanas 200+.
+ * ============================================================= */
+
+.hw-deco,
+.hw-ambiente,
+.hw-solo { display: none; }
+
+html[data-temporada="halloween"] .hw-deco,
+html[data-temporada="halloween"] .hw-ambiente,
+html[data-temporada="halloween"] .hw-solo { display: block; }
+
+/* ---------- Color de la temporada: el rojo de acento pasa a calabaza ---------- */
+html[data-temporada="halloween"] .hero-tagline,
+html[data-temporada="halloween"] .rd-titulo-icono { color: #ff8a2b; }
+html[data-temporada="halloween"] .rd-raya { background: #ff7a1a; }
+
+/* Un filo de brasa bajo el menú superior. */
+html[data-temporada="halloween"] #navbar,
+html[data-temporada="halloween"] #navbar.scrolled {
+  border-bottom: 1px solid rgba(255, 122, 26, 0.28);
+  box-shadow: 0 10px 34px -12px rgba(255, 110, 20, 0.35);
+}
+
+/* =============================================================
+ * HERO
+ * ============================================================= */
+.hw-deco {
+  position: absolute;
+  inset: 0;
+  z-index: 1;   /* sobre la foto, debajo del texto del hero (z-index 2) */
+  pointer-events: none;
+  overflow: hidden;
+}
+/* Gradación de color: viñeta fría en los bordes y bruma violeta arriba. */
+.hw-deco::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 90% at 50% 45%, transparent 40%, rgba(6, 3, 12, 0.72) 100%),
+    linear-gradient(180deg, rgba(40, 14, 70, 0.4) 0%, transparent 40%);
+}
+
+/* ---------- Luna llena (solo computador: en celular caería sobre la comida) ---------- */
+.hw-luna { display: none; }
+@media (min-width: 1024px) {
+  .hw-luna {
+    display: block;
+    position: absolute;
+    left: 47%;
+    top: 168px;
+    width: clamp(92px, 8vw, 132px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    /* Mares, cráteres y el brillo de Tycho sobre un disco gris frío. */
+    background:
+      radial-gradient(ellipse 13% 11% at 31% 27%, rgba(112, 110, 106, 0.55), transparent 75%),
+      radial-gradient(ellipse 15% 24% at 24% 52%, rgba(112, 110, 106, 0.45), transparent 75%),
+      radial-gradient(ellipse 8% 7% at 57% 29%, rgba(112, 110, 106, 0.5), transparent 75%),
+      radial-gradient(ellipse 11% 8% at 63% 47%, rgba(112, 110, 106, 0.42), transparent 75%),
+      radial-gradient(ellipse 7% 9% at 72% 62%, rgba(122, 120, 116, 0.36), transparent 75%),
+      radial-gradient(ellipse 9% 6% at 45% 40%, rgba(122, 120, 116, 0.28), transparent 75%),
+      radial-gradient(circle at 66% 20%, rgba(130, 128, 124, 0.35) 0 2%, transparent 3.8%),
+      radial-gradient(circle at 38% 76%, rgba(130, 128, 124, 0.3) 0 2%, transparent 4%),
+      radial-gradient(circle at 46% 83%, rgba(255, 255, 250, 0.7) 0 1.6%, transparent 3.2%),
+      radial-gradient(circle at 40% 36%, #f5f4ee 0%, #dcdad1 55%, #b3b0a6 100%);
+    /* Borde más oscuro (oscurecimiento del limbo) y halo azulado. */
+    box-shadow:
+      inset -12px -9px 26px rgba(0, 0, 0, 0.38),
+      inset 5px 5px 16px rgba(255, 255, 255, 0.25),
+      0 0 34px 6px rgba(220, 225, 255, 0.2),
+      0 0 140px 50px rgba(190, 200, 255, 0.08);
+    opacity: 0.92;
+  }
+}
+/* Una nube oscura que cruza por delante de la luna, muy despacio. */
+.hw-nube {
+  position: absolute;
+  left: -120%;
+  top: 48%;
+  width: 340%;
+  height: 46%;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse 22% 60% at 30% 50%, rgba(18, 12, 28, 0.75), transparent 70%),
+    radial-gradient(ellipse 18% 45% at 48% 40%, rgba(18, 12, 28, 0.6), transparent 70%),
+    radial-gradient(ellipse 20% 55% at 64% 58%, rgba(18, 12, 28, 0.7), transparent 70%);
+  animation: hw-nube 48s linear infinite;
+}
+@keyframes hw-nube {
+  from { transform: translateX(-35%); }
+  to   { transform: translateX(45%); }
+}
+
+/* Telarañas finas en las esquinas superiores. */
+.hw-web {
+  position: absolute;
+  top: 0;
+  width: clamp(130px, 20vw, 280px);
+  aspect-ratio: 1;
+  background: url(/assets/halloween/telarana.svg) 0 0 / contain no-repeat;
+  opacity: 0.14;
+}
+.hw-web--izq { left: 0; }
+.hw-web--der { right: 0; transform: scaleX(-1); }
+
+/* ---------- Arañas (la del hero cuelga; la de la página camina) ---------- */
+.hw-arana-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.hw-patas path {
+  fill: none;
+  stroke: #0e0b12;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.hw-arana-cuerpo { fill: #0e0b12; }
+.hw-colgante .hw-arana-svg,
+.hw-caminante .hw-arana-svg {
+  filter: drop-shadow(0 0 1.5px rgba(255, 170, 110, 0.85)) drop-shadow(0 0 6px rgba(255, 120, 40, 0.45)) drop-shadow(0 3px 4px rgba(0, 0, 0, 0.6));
+}
+/* Las patas se mueven en dos grupos alternos, como una araña de verdad. */
+.hw-patas {
+  transform-box: view-box;
+  transform-origin: 30px 28px;
+  animation: hw-patas 0.22s ease-in-out infinite alternate;
+}
+.hw-patas--b { animation-delay: -0.22s; }
+@keyframes hw-patas {
+  from { transform: rotate(-8deg); }
+  to   { transform: rotate(8deg); }
+}
+
+/* Cuelga de su hilo bajo el menú, sube y baja despacio. */
+.hw-colgante {
+  position: absolute;
+  right: clamp(40px, 8vw, 140px);
+  top: 0;
+  width: 30px;
+  transform: translateY(170px);
+  animation: hw-colgar 9s ease-in-out infinite;
+}
+.hw-colgante .hw-patas { animation-duration: 1.4s; }
+.hw-colgante::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 85%;
+  width: 1px;
+  height: 700px;
+  background: linear-gradient(transparent, rgba(255, 255, 255, 0.35));
+}
+@keyframes hw-colgar {
+  0%, 100% { transform: translateY(170px); }
+  45% { transform: translateY(235px); }
+  55% { transform: translateY(228px); }
+}
+
+/* ---------- Murciélagos (silueta + aleteo en ::before) ---------- */
+.hw-bat {
+  position: absolute;
+  left: 0;
+  aspect-ratio: 54 / 20;
+}
+.hw-bat::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url(/assets/halloween/murcielago.svg) center / contain no-repeat;
+  /* Filo de luz para que la silueta se lea también sobre fondos oscuros. */
+  filter: drop-shadow(0 0 1.2px rgba(255, 175, 120, 0.9)) drop-shadow(0 0 5px rgba(255, 120, 40, 0.35));
+  animation: hw-aleteo 0.3s ease-in-out infinite alternate;
+}
+@keyframes hw-aleteo {
+  from { transform: scaleY(1); }
+  to   { transform: scaleY(0.35) translateY(8%); }
+}
+/* Los del hero cruzan de vez en cuando y el resto del ciclo están fuera. */
+.hw-deco .hw-bat { opacity: 0; animation: hw-cruce linear infinite; }
+.hw-bat--1 { top: 22%; width: 44px; animation-duration: 22s; }
+.hw-bat--2 { top: 27%; width: 30px; animation-duration: 22s; animation-delay: 0.6s; }
+.hw-bat--3 { top: 18%; width: 36px; animation-duration: 29s; animation-delay: -11s; }
+.hw-bat--2::before { animation-duration: 0.26s; }
+.hw-bat--3::before { animation-duration: 0.34s; }
+@keyframes hw-cruce {
+  0%   { opacity: 0;   transform: translate(-8vw, 30px); }
+  4%   { opacity: 0.9; }
+  30%  { opacity: 0.9; transform: translate(60vw, -24px); }
+  42%  { opacity: 0;   transform: translate(105vw, -60px); }
+  100% { opacity: 0;   transform: translate(105vw, -60px); }
+}
+
+/* Niebla baja del hero: dos capas que avanzan a distinta velocidad. */
+.hw-niebla {
+  position: absolute;
+  left: 0;
+  bottom: -4%;
+  width: 200%;
+  height: 42%;
+  background:
+    radial-gradient(ellipse 14% 38% at 8% 70%, rgba(205, 198, 230, 0.14), transparent 70%),
+    radial-gradient(ellipse 18% 44% at 26% 82%, rgba(205, 198, 230, 0.11), transparent 70%),
+    radial-gradient(ellipse 15% 36% at 41% 66%, rgba(205, 198, 230, 0.13), transparent 70%),
+    radial-gradient(ellipse 14% 38% at 58% 70%, rgba(205, 198, 230, 0.14), transparent 70%),
+    radial-gradient(ellipse 18% 44% at 76% 82%, rgba(205, 198, 230, 0.11), transparent 70%),
+    radial-gradient(ellipse 15% 36% at 91% 66%, rgba(205, 198, 230, 0.13), transparent 70%);
+  will-change: transform;
+  animation: hw-niebla 70s linear infinite;
+}
+.hw-niebla--frente { height: 30%; opacity: 0.8; animation-duration: 46s; animation-direction: reverse; }
+@keyframes hw-niebla {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Luz de vela/calabaza que sube desde abajo y titila. */
+.hw-vela {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(75% 42% at 50% 108%, rgba(255, 112, 24, 0.24), transparent 72%);
+  animation: hw-titila 4.5s steps(1) infinite;
+}
+@keyframes hw-titila {
+  0%   { opacity: 0.9; }
+  12%  { opacity: 0.72; }
+  19%  { opacity: 1; }
+  34%  { opacity: 0.8; }
+  41%  { opacity: 0.95; }
+  63%  { opacity: 0.68; }
+  70%  { opacity: 1; }
+  86%  { opacity: 0.84; }
+}
+
+/* =============================================================
+ * TODA LA PÁGINA (capa fija)
+ * ============================================================= */
+.hw-ambiente {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Niebla al pie de la pantalla: tenue y desvanecida hacia arriba, para
+   que el texto que pasa por debajo se siga leyendo perfecto. */
+.hw-niebla-pie {
+  position: absolute;
+  left: 0;
+  bottom: -5vh;
+  width: 200%;
+  height: 34vh;
+  background:
+    radial-gradient(ellipse 12% 50% at 6% 72%, rgba(200, 194, 228, 0.09), transparent 70%),
+    radial-gradient(ellipse 16% 60% at 22% 85%, rgba(200, 194, 228, 0.07), transparent 70%),
+    radial-gradient(ellipse 13% 48% at 38% 70%, rgba(200, 194, 228, 0.08), transparent 70%),
+    radial-gradient(ellipse 12% 50% at 56% 72%, rgba(200, 194, 228, 0.09), transparent 70%),
+    radial-gradient(ellipse 16% 60% at 72% 85%, rgba(200, 194, 228, 0.07), transparent 70%),
+    radial-gradient(ellipse 13% 48% at 88% 70%, rgba(200, 194, 228, 0.08), transparent 70%);
+  -webkit-mask-image: linear-gradient(to top, #000 45%, transparent);
+  mask-image: linear-gradient(to top, #000 45%, transparent);
+  will-change: transform;
+  animation: hw-niebla 95s linear infinite;
+}
+.hw-niebla-pie--2 { height: 24vh; animation-duration: 62s; animation-direction: reverse; }
+
+/* Bandada que cruza la pantalla en arco cada ~34 s. */
+.hw-bandada {
+  position: absolute;
+  left: 0;
+  top: calc(150px + 6vh);   /* siempre por debajo del menú superior */
+  width: 170px;
+  height: 90px;
+  transform: translate(-240px, 6vh);
+  animation: hw-bandada 34s linear infinite;
+  animation-delay: 3s;
+}
+.hw-bandada .hw-bat { position: absolute; }
+.hw-bat--b1 { left: 0;     top: 22px; width: 46px; }
+.hw-bat--b2 { left: 64px;  top: 48px; width: 32px; }
+.hw-bat--b3 { left: 112px; top: 6px;  width: 40px; }
+.hw-bat--b4 { left: 30px;  top: 70px; width: 26px; }
+.hw-bat--b1::before { animation-duration: 0.28s; }
+.hw-bat--b2::before { animation-duration: 0.24s; animation-delay: -0.1s; }
+.hw-bat--b3::before { animation-duration: 0.32s; animation-delay: -0.2s; }
+.hw-bat--b4::before { animation-duration: 0.22s; animation-delay: -0.05s; }
+@keyframes hw-bandada {
+  0%   { transform: translate(-240px, 6vh); }
+  12%  { transform: translate(30vw, -2vh); }
+  24%  { transform: translate(65vw, 3vh); }
+  36%  { transform: translate(calc(100vw + 60px), -5vh); }
+  100% { transform: translate(calc(100vw + 60px), -5vh); }
+}
+
+/* Araña que entra caminando por el borde derecho, da una vuelta y se va.
+   El giro acompaña la dirección (la cabeza del dibujo mira hacia arriba). */
+.hw-caminante {
+  position: absolute;
+  right: -70px;
+  top: 58vh;
+  width: 44px;
+  transform: translate(0, 0) rotate(-90deg);
+  animation: hw-camina 30s linear infinite;
+  animation-delay: 8s;
+}
+@keyframes hw-camina {
+  0%   { transform: translate(0, 0) rotate(-90deg); }
+  10%  { transform: translate(-180px, 10px) rotate(-100deg); }
+  16%  { transform: translate(-250px, 60px) rotate(-150deg); }
+  20%  { transform: translate(-262px, 110px) rotate(-200deg); }
+  26%  { transform: translate(-180px, 150px) rotate(-250deg); }
+  34%  { transform: translate(20px, 160px) rotate(-270deg); }
+  100% { transform: translate(20px, 160px) rotate(-270deg); }
+}
+/* En celular el texto ocupa todo el ancho: la araña se queda en la franja
+   del borde derecho, más pequeña, y baja por él en vez de cruzar. */
+@media (max-width: 767px) {
+  .hw-caminante {
+    width: 30px;
+    right: -50px;
+    top: 46vh;
+    animation-name: hw-camina-movil;
+  }
+}
+@keyframes hw-camina-movil {
+  0%   { transform: translate(0, 0) rotate(-120deg); }
+  8%   { transform: translate(-48px, 30px) rotate(-150deg); }
+  20%  { transform: translate(-54px, 150px) rotate(-180deg); }
+  26%  { transform: translate(-46px, 210px) rotate(-210deg); }
+  34%  { transform: translate(10px, 250px) rotate(-240deg); }
+  100% { transform: translate(10px, 250px) rotate(-240deg); }
+}
+
+/* ---------- Carta: cada producto con resplandor de brasa ---------- */
+html[data-temporada="halloween"] .cat-card {
+  border-color: rgba(255, 122, 26, 0.32);
+  box-shadow:
+    0 0 0 1px rgba(255, 122, 26, 0.12),
+    0 0 22px -2px rgba(255, 110, 20, 0.32),
+    0 0 60px -14px rgba(255, 90, 10, 0.35);
+}
+html[data-temporada="halloween"] .cat-card:hover {
+  border-color: rgba(255, 140, 50, 0.6);
+  box-shadow:
+    0 0 0 1px rgba(255, 140, 50, 0.25),
+    0 0 30px 0 rgba(255, 120, 30, 0.5),
+    0 0 80px -10px rgba(255, 90, 10, 0.45);
+}
+
+/* ---------- Banner del combo: misma luz de vela, sin adornos ---------- */
+html[data-temporada="halloween"] .rd-combo-full::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 70% at 100% 100%, rgba(255, 112, 24, 0.2), transparent 70%),
+    linear-gradient(180deg, rgba(40, 14, 70, 0.25), transparent 45%);
+}
+
+/* ---------- Saludo en el pie de página ---------- */
+.hw-saludo {
+  margin-top: 0.9rem;
+  color: #ff9a4d;
+  font-weight: 600;
+  font-size: 0.92rem;
+}

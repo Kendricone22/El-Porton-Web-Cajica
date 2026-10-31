@@ -10,6 +10,7 @@ import InsigniaHorario from '@/componentes/InsigniaHorario';
 import DatosEstructurados from '@/componentes/DatosEstructurados';
 import FondoParticulas from '@/componentes/FondoParticulas';
 import Rastreo from '@/componentes/Rastreo';
+import { AmbienteHalloween } from '@/componentes/DecoracionHalloween';
 import { Contacto, LlamadoPedido, Nosotros, PieDePagina, Testimonios } from '@/componentes/Secciones';
 
 /* =============================================================
@@ -53,6 +54,8 @@ export default async function Portada() {
       <FondoParticulas />
 
       <Navbar />
+      {/* Solo se ve en temporada (lib/temporada.ts): niebla, murciélagos y araña. */}
+      <AmbienteHalloween />
       <InsigniaHorario />
 
       <main>
