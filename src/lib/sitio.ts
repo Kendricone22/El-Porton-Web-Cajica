@@ -12,7 +12,7 @@
  * y redesplegar. No hay que tocar código.
  * ============================================================= */
 
-export const SITIO_POR_DEFECTO = 'https://el-porton-web-cajica.vercel.app';
+export const SITIO_POR_DEFECTO = 'https://elportoncajica.com';
 
 /**
  * Normaliza lo que haya en la variable: quita espacios y saltos de línea

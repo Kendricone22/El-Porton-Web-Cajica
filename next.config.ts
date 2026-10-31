@@ -38,6 +38,21 @@ const nextConfig: NextConfig = {
      desarrollo (en producción nunca aparece). Los errores de compilación
      se siguen mostrando igual. */
   devIndicators: false,
+  /* El link viejo (vercel.app) lleva al dominio propio con redirección
+     permanente: Instagram y los links ya compartidos siguen sirviendo y
+     Google no ve dos páginas iguales. /api queda fuera a propósito: una
+     pestaña abierta antes del cambio enviaría su pedido a esa ruta y un
+     redirección entre dominios lo bloquearía (CORS). */
+  async redirects() {
+    return [
+      {
+        source: "/:path((?!api/).*)",
+        has: [{ type: "host", value: "el-porton-web-cajica.vercel.app" }],
+        destination: "https://elportoncajica.com/:path",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [{ source: "/:path*", headers: [...CABECERAS_SEGURIDAD] }];
   },
